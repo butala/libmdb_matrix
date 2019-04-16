@@ -15,10 +15,10 @@ int main(int argc, char **argv) {
   fftwe_plan C2;
   fftwe_plan C3;
   elem *h2;
-  
+
   const int N = 4;
   int i;
-  
+
 
   h1 = fftwe_malloc(N * sizeof(elem));
   assert(h1);
@@ -38,7 +38,8 @@ int main(int argc, char **argv) {
   printf("\n");
 
   /* Corresponds to fft([[N:-1:1],[2:N-1]]) */
-  
+  /* np.fft.fft(list(range(N, 1, -1)) + list(range(1, N))) */
+
   fftwe_execute(C1);
 
   printf("\n");
@@ -72,7 +73,9 @@ int main(int argc, char **argv) {
   printf("\n");
 
   /* Corresponds to fft([[N:-1:1],[1:N]]).*exp(-j*pi*(0:2*(N-1)+1)/(2*N)) */
-  
+  /* x = list(range(4, 0, -1)) + list(range(1, 5))
+     np.fft.fft(x) * np.exp(-1j*np.pi*np.array(range(0, 2*N))/(2*N)) */
+
   fftwe_execute(C3);
 
   printf("\n");
@@ -81,13 +84,15 @@ int main(int argc, char **argv) {
     printf_elem_s(h2[i] / (2*N));
   }
   printf("\n");
-  
+
+  /* Corresponds to list(range(N, 0, -1)) */
+
   fftwe_destroy_plan(C2);
   fftwe_destroy_plan(C3);
   fftwe_free(h2);
 
-  
+
   fftwe_cleanup();
-  
+
   return 0;
 }
