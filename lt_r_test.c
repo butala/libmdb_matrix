@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 #ifndef OSX
   full_r *A2;
 #endif
-  
+
   /* Case m < n */
 
   m = 4;
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 
   printf("A (m < n):\n");
   lt_r_printf(A);
-  
+
   lt_r_destroy(&A);
 
 
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   printf("\n");
   printf("A (m > n):\n");
   lt_r_printf(A);
-  
+
   lt_r_destroy(&A);
 
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 #ifndef OSX
   A2 = full_r_create(m, n);
   full_r_set0(A2);
-  
+
   A2->v[0][0] = 103;
   A2->v[0][1] = 86;
   A2->v[0][2] = 74;
@@ -94,16 +94,16 @@ int main(int argc, char **argv) {
   printf("A2:\n");
   full_r_printf(A2);
 
-  epotrf(CblasRowMajor, CblasUpper, A2->m, A2->v_vector, A2->n);
-  
+  epotrf(LAPACK_ROW_MAJOR, 'U', A2->m, A2->v_vector, A2->n);
+
   printf("\n");
   printf("chol(A2):\n");
   full_r_printf(A2);
 
   full_r_destroy(&A2);
-#endif  
-  
+#endif
+
   lt_r_destroy(&A);
-  
+
   return 0;
 }

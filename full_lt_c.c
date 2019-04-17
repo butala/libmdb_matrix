@@ -13,7 +13,7 @@ static int lt_c_get_submatrix_index(const int i, const int j, const int M);
 
 lt_c *lt_c_create(int m, int n) {
   lt_c *A;
-  
+
   assert(m > 0 && n > 0);
 
   A = malloc(sizeof(lt_c));
@@ -31,7 +31,7 @@ lt_c *lt_c_create(int m, int n) {
 
   A->v = malloc(sizeof(elem) * A->N);
   assert(A->v);
-  
+
   return A;
 }
 
@@ -48,9 +48,9 @@ lt_c *lt_c_import(const char *filename) {
   lt_c *A;
   int m, n;
   int r;
-  
+
   FILE *fid;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -66,9 +66,9 @@ lt_c *lt_c_import(const char *filename) {
 
   r = fread(A->v, sizeof(elem), A->N, fid);
   assert(r == A->N);
-  
+
   fclose(fid);
-  
+
   return A;
 }
 
@@ -147,7 +147,7 @@ void lt_c_submatrix_fprintf(FILE *fid, const lt_c *A, const int M) {
   assert(fid);
   assert(A);
   assert(M >= 0 && M <= MIN(A->m, A->n));
-  
+
   for (i = 0; i < M; i++) {
     for (j = 0; j < M; j++) {
       if (j <= i) {
@@ -160,8 +160,8 @@ void lt_c_submatrix_fprintf(FILE *fid, const lt_c *A, const int M) {
     fprintf(fid, "\n");
   }
 }
-  
-  
+
+
 void lt_c_printf(const lt_c *A) {
   lt_c_fprintf(stdout, A);
 }
@@ -180,5 +180,5 @@ void lt_c_eppsv(lt_c *A, full_c *B) {
   assert(A->m == A->n);
   assert(A->n == B->m);
 
-  eppsv(CblasColMajor, CblasLower, A->n, B->n, A->v, B->v_vector, B->m);
+  eppsv(LAPACK_COL_MAJOR, 'L', A->n, B->n, A->v, B->v_vector, B->m);
 }

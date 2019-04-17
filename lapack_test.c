@@ -28,10 +28,10 @@ int main(int argc, char **argv) {
 
   const int N2 = 1000;
   const int K2 = 700;
-  
+
   multi_sw *sw;
 
-  
+
   X = full_r_create(N, N);
   A = full_r_create(N, N);
   B = full_r_create(N, K);
@@ -46,12 +46,12 @@ int main(int argc, char **argv) {
   /* Result:
 
      X:
-     +0.841471 +0.514395 -0.404239 -0.836022 -0.608083 +0.279873 
-     +0.819289 +0.684489 -0.144987 -0.790197 -0.744023 +0.004426 
-     +0.747210 +0.787934 +0.136312 -0.688695 -0.817847 -0.271704 
-     +0.613367 +0.835315 +0.396850 -0.520750 -0.841450 -0.507976 
-     +0.411573 +0.836685 +0.602731 -0.288001 -0.820683 -0.680216 
-     +0.153640 +0.792405 +0.740775 -0.013276 -0.750336 -0.785617 
+     +0.841471 +0.514395 -0.404239 -0.836022 -0.608083 +0.279873
+     +0.819289 +0.684489 -0.144987 -0.790197 -0.744023 +0.004426
+     +0.747210 +0.787934 +0.136312 -0.688695 -0.817847 -0.271704
+     +0.613367 +0.835315 +0.396850 -0.520750 -0.841450 -0.507976
+     +0.411573 +0.836685 +0.602731 -0.288001 -0.820683 -0.680216
+     +0.153640 +0.792405 +0.740775 -0.013276 -0.750336 -0.785617
 
      Matches Matlab:
 
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
       0.1536    0.7924    0.7408   -0.0133   -0.7503   -0.7856
 
   */
-  
+
 
   full_r_mmmT(X, X, 0, A);
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
       }
     }
   }
-  
+
   printf("\n");
   printf("A:\n");
   full_r_printf(A);
@@ -86,11 +86,11 @@ int main(int argc, char **argv) {
   /* Result:
 
      A:
-     +2.283112 +2.214404 +1.976003 +1.590251 +1.082510 +0.484936 
-     +0.000000 +2.338782 +2.283249 +2.052055 +1.657685 +1.126147 
-     +0.000000 +0.000000 +2.414742 +2.355416 +2.103299 +1.676400 
-     +0.000000 +0.000000 +0.000000 +2.468717 +2.376608 +2.087480 
-     +0.000000 +0.000000 +0.000000 +0.000000 +2.451879 +2.326717 
+     +2.283112 +2.214404 +1.976003 +1.590251 +1.082510 +0.484936
+     +0.000000 +2.338782 +2.283249 +2.052055 +1.657685 +1.126147
+     +0.000000 +0.000000 +2.414742 +2.355416 +2.103299 +1.676400
+     +0.000000 +0.000000 +0.000000 +2.468717 +2.376608 +2.087480
+     +0.000000 +0.000000 +0.000000 +0.000000 +2.451879 +2.326717
      +0.000000 +0.000000 +0.000000 +0.000000 +0.000000 +2.380633
 
      Matches Matlab:
@@ -105,12 +105,12 @@ int main(int argc, char **argv) {
       1.5903    2.0521    2.3554    2.4687    2.3766    2.0875
       1.0825    1.6577    2.1033    2.3766    2.4519    2.3267
       0.4849    1.1261    1.6764    2.0875    2.3267    2.3806
-      
+
    */
-  
-  r = epotrf(CblasRowMajor, CblasUpper, N, A->v_vector, A->n);
+
+  r = epotrf(LAPACK_ROW_MAJOR, 'U', N, A->v_vector, A->n);
   assert(r == 0);
-  
+
   printf("\n");
   printf("chol(A):\n");
   full_r_printf(A);
@@ -118,12 +118,12 @@ int main(int argc, char **argv) {
   /* Result (using double precision):
 
      chol(A):
-     +1.510997 +1.465525 +1.307748 +1.052452 +0.716421 +0.320938 
-     +0.000000 +0.437057 +0.839049 +1.166121 +1.390555 +1.500502 
-     +0.000000 +0.000000 +0.023121 +0.027797 -0.014817 -0.099473 
-     +0.000000 +0.000000 +0.000000 +0.021248 +0.068965 +0.127390 
-     +0.000000 +0.000000 +0.000000 +0.000000 +0.000532 +0.001743 
-     +0.000000 +0.000000 +0.000000 +0.000000 +0.000000 +0.000619 
+     +1.510997 +1.465525 +1.307748 +1.052452 +0.716421 +0.320938
+     +0.000000 +0.437057 +0.839049 +1.166121 +1.390555 +1.500502
+     +0.000000 +0.000000 +0.023121 +0.027797 -0.014817 -0.099473
+     +0.000000 +0.000000 +0.000000 +0.021248 +0.068965 +0.127390
+     +0.000000 +0.000000 +0.000000 +0.000000 +0.000532 +0.001743
+     +0.000000 +0.000000 +0.000000 +0.000000 +0.000000 +0.000619
 
 
      Matches Matlab:
@@ -138,9 +138,9 @@ int main(int argc, char **argv) {
 	  0         0         0    0.0212    0.0690    0.1274
 	  0         0         0         0    0.0005    0.0017
 	  0         0         0         0         0    0.0006
-	  
+
    */
-  
+
   for (i = 0; i < N*K; i++) {
     B->v_vector[i] = i + 1;
   }
@@ -152,12 +152,12 @@ int main(int argc, char **argv) {
   /* Result:
 
      B:
-     +1.000000 +2.000000 
-     +3.000000 +4.000000 
-     +5.000000 +6.000000 
-     +7.000000 +8.000000 
-     +9.000000 +10.000000 
-     +11.000000 +12.000000 
+     +1.000000 +2.000000
+     +3.000000 +4.000000
+     +5.000000 +6.000000
+     +7.000000 +8.000000
+     +9.000000 +10.000000
+     +11.000000 +12.000000
 
      Matches Matlab:
 
@@ -171,26 +171,27 @@ int main(int argc, char **argv) {
       7     8
       9    10
      11    12
-     
+
   */
 
-  r = epotrs(CblasRowMajor, CblasUpper, N, K, A->v_vector,
-	     A->n, B->v_vector, N);
+  r = epotrs(LAPACK_ROW_MAJOR, 'U', N, K, A->v_vector,
+	     A->n, B->v_vector, 2); //N);
   assert(r == 0);
-  
+
   printf("\n");
+  printf("N=%d\n", N);
   printf("A\\B:\n");
   full_r_printf(B);
 
   /* Result:
 
      A\B:
-     +550735.185904 -1246639.033586 
-     +752425.537508 +660977.432838 
-     -1196787.770172 +537788.494434 
-     +1681914.611511 -4104649.473234 
-     +3264337.032049 +663557.803743 
-     -2686325.103009 +1344033.699798 
+     +912940.465040 +1101470.369246
+     -2016942.977022 -2493278.049158
+     +1086199.119413 +1504851.031842
+     +1321524.851915 +1321954.918207
+     -2145319.349255 -2393575.574512
+     +941202.796768 +1075576.998603
 
 
      NOTE: This is from the ATLAS FAQ:
@@ -214,40 +215,29 @@ int main(int argc, char **argv) {
      each other.  This is column major order in the mdb_matrix
      framework!
 
-     
+
      Matches Matlab:
 
-     >> B2 = reshape(1:12,6,2)
-     
-     B2 =
-
-        1     7
-	2     8
-	3     9
-	4    10
-	5    11
-	6    12
-
-     >> A\B2
+     >> A\B
 
      ans =
 
       1.0e+06 *
 
-        0.5507    1.6819
-       -1.2466   -4.1046
-        0.7524    3.2643
-	0.6610    0.6636
-       -1.1968   -2.6863
-        0.5378    1.3440
-	
+      0.912940448070594   1.101470350388620
+     -2.016942918637024  -2.493277985310851
+      1.086199031417526   1.504850937411045
+      1.321524922281788   1.321954991701341
+     -2.145319377152586  -2.393575602154475
+      0.941202800133764   1.075577001309223
+
   */
 
-  
+
   full_r_destroy(&X);
   full_r_destroy(&A);
   full_r_destroy(&B);
-  
+
 
   /****************************************************************************/
 
@@ -256,7 +246,7 @@ int main(int argc, char **argv) {
   multi_sw_set_name(sw, 0, "po (full NxN matrix)  ");
   multi_sw_set_name(sw, 1, "pp (packed NxN matrix)");
 
-  
+
   X_c = full_c_create(N2, N2);
   Y_c = full_c_create(N2, N2);
   A_c = full_c_create(N2, N2);
@@ -266,7 +256,7 @@ int main(int argc, char **argv) {
 
   A_ut_c = ut_c_create(N2, N2);
 
-  
+
   for (i = 0; i < N2*N2; i++) {
     X_c->v_vector[i] = sin(cos(i));
   }
@@ -301,7 +291,7 @@ int main(int argc, char **argv) {
   for (i = 0; i < N2; i++) {
     A_c->v[i][i] += 1;
   }
-  
+
   index = 0;
   for (i = 0; i < N2; i++) {
     for (j = 0; j < N2; j++) {
@@ -321,9 +311,9 @@ int main(int argc, char **argv) {
     printf("A_c:\n");
     full_c_printf(A_c);
   */
-  
+
   multi_sw_start(sw, 0);
-  r = epotrf(CblasColMajor, CblasUpper, N2, A_c->v_vector, A_c->m);
+  r = epotrf(LAPACK_COL_MAJOR, 'U', N2, A_c->v_vector, A_c->m);
   multi_sw_stop(sw, 0);
   assert(r == 0);
 
@@ -340,7 +330,7 @@ int main(int argc, char **argv) {
   */
 
   multi_sw_start(sw, 1);
-  r = epptrf(CblasColMajor, CblasUpper, A_ut_c->n, A_ut_c->v);
+  r = epptrf(LAPACK_COL_MAJOR, 'U', A_ut_c->n, A_ut_c->v);
   multi_sw_stop(sw, 1);
   assert(r == 0);
 
@@ -349,7 +339,7 @@ int main(int argc, char **argv) {
     printf("chol(A_ut_c):\n");
     ut_c_printf(A_ut_c);
   */
-  
+
   for (i = 0; i < N2*K2; i++) {
     B_c->v_vector[i] = i + 1;
   }
@@ -359,9 +349,9 @@ int main(int argc, char **argv) {
     printf("B_c:\n");
     full_c_printf(B_c);
   */
-  
+
   multi_sw_start(sw, 0);
-  r = epotrs(CblasColMajor, CblasUpper, N2, K2, A_c->v_vector,
+  r = epotrs(LAPACK_COL_MAJOR, 'U', N2, K2, A_c->v_vector,
 	     A_c->n, B_c->v_vector, N2);
   multi_sw_stop(sw, 0);
   assert(r == 0);
@@ -371,13 +361,13 @@ int main(int argc, char **argv) {
     printf("A_c\\B_c:\n");
     full_c_printf(B_c);
   */
-  
+
   for (i = 0; i < N2*K2; i++) {
     B_c2->v_vector[i] = i + 1;
   }
 
   multi_sw_start(sw, 1);
-  r = epptrs(CblasColMajor, CblasUpper, N2, K2, A_ut_c->v,
+  r = epptrs(LAPACK_COL_MAJOR, 'U', N2, K2, A_ut_c->v,
 	     B_c2->v_vector, N2);
   multi_sw_stop(sw, 1);
   assert(r == 0);
@@ -389,16 +379,16 @@ int main(int argc, char **argv) {
   printf_elem(enrm2(B_c2->n*B_c2->m, B_c2->v_vector, 1)
 	      /enrm2(B_c->n*B_c->m, B_c->v_vector, 1));
   printf("\n");
-  
+
   /*
     printf("\n");
     printf("A_ut_c\\B_c:\n");
     full_c_printf(B_c2);
   */
-  
+
   printf("\n");
   multi_sw_printf(sw);
-  
+
   full_c_destroy(&X_c);
   full_c_destroy(&Y_c);
   full_c_destroy(&A_c);
@@ -408,6 +398,6 @@ int main(int argc, char **argv) {
   ut_c_destroy(&A_ut_c);
 
   multi_sw_destroy(&sw);
-  
+
   return 0;
 }

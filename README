@@ -2,4 +2,4 @@ Dependancies
 - gsl
 - fftw
 - blas (openblas)
-- lapack
+- lapacke

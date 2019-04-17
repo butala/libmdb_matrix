@@ -29,25 +29,25 @@ int main(int argc, char **argv) {
 
   lt_c_eppsv(A, B);
 
-  /*eppsv(CblasColMajor, CblasLower, A->n, B->n, A->v, B->v_vector, B->m);*/
-  
+  /*eppsv(LACPACK_COL_MAJOR, 'L', A->n, B->n, A->v, B->v_vector, B->m);*/
+
   /*
-  epptrf(CblasColMajor, CblasLower, A->n, A->v);
+  epptrf(LAPACK_COL_MAJOR, 'L', A->n, A->v);
 
   printf("chol(A):\n");
   lt_c_printf(A);
 
   printf("\nB->m=%d   B->n=%d\n", B->m, B->n);
   fflush(stdout);
-  
-  epptrs(CblasColMajor, CblasLower, A->n, B->n, A->v, B->v_vector, B->m);
+
+  epptrs(LAPACK_COL_MAJOR, 'L', A->n, B->n, A->v, B->v_vector, B->m);
   */
-  
+
   printf("A\\B\n");
   full_c_printf(B);
-  
+
   lt_c_destroy(&A);
   full_c_destroy(&B);
-  
+
   return 0;
 }

@@ -5,19 +5,13 @@ PWD := $(shell pwd)
 UNAME := $(shell uname)
 MACHINE := $(shell uname -m)
 
-LIBS = -lm -lgsl
+LIBS = -lm -lgsl -llapacke
 LDFLAGS = -L.
 
 ifeq ($(UNAME),Linux)
-   DEFINES = -DLINUX -DOPENBLAS #-DATLAS
+   DEFINES = -DLINUX -DOPENBLAS
    ifeq ($(MACHINE),x86_64)
       DEFINES += -DLONG_PTR
-      #INCLUDE_DIR = -I/usr/local/atlas/include
-      #INCLUDE_DIR = -I/usr/include/atlas
-      #LDFLAGS += -L/usr/local/atlas/lib
-      #LIBS += -llapack -latlas -lptf77blas -lptcblas
-      #LIBS += -llapack -latlas -llapack_atlas -lf77blas -lcblas
-              #-Wl,-rpath,/usr/local/atlas/lib
        LIBS += -lopenblas
    else ifeq ($(MACHINE),i686)
       LDFLAGS += -L/usr/lib/sse2 -L/usr/lib/sse2/atlas
