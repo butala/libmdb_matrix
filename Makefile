@@ -1,5 +1,6 @@
 CC = gcc
 LIBTOOL = libtool
+AR = ar
 
 PWD := $(shell pwd)
 UNAME := $(shell uname)
@@ -64,6 +65,9 @@ endif
 
 
 LIB_TARGET = libmdb_matrix_s.so libmdb_matrix_d.so
+
+STATIC_LIB_TARGET = libmdb_matrix_s.a libmdb_matrix_d.a
+
 TEST_TARGET = full_r_test full_c_test sparse_rcs_test sparse_rcs_mvm_test \
 	      sparse_ccs_test toeplitz_test filter_test psf_test psf_2d_test \
               filter_new_test fftwe_test lapack_test llist_test \
@@ -118,6 +122,19 @@ endif
 # The order the header files appear matters!
 mdb_matrix_d.h: $(LIB_H)
 	./build_header.py -a "#define DOUBLE_ELEM" -o $@ $^
+
+
+static: $(STATIC_LIB_TARGET)
+
+libmdb_matrix_s.a: mdb_matrix_s.h
+libmdb_matrix_s.a: $(LIB_OBJ_S)
+libmdb_matrix_s.a:
+	$(AR) rcs $@ $(LIB_OBJ_S)
+
+libmdb_matrix_d.a: mdb_matrix_d.h
+libmdb_matrix_d.a: $(LIB_OBJ_D)
+libmdb_matrix_d.a:
+	$(AR) rcs $@ $(LIB_OBJ_D)
 
 
 full_r_test: full_r_test.o
