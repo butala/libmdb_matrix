@@ -86,6 +86,20 @@ def import_diag(filename):
         return sp.sparse.spdiags(v, 0, m, n)
 
 
+def import_sparse_coo(fname, dtype=np.double):
+    with open(fname, 'rb') as fid:
+        sizeof_elem = np.fromfile(fid, dtype=np.int32, count=1)[0]
+        assert sizeof_elem == np.dtype(dtype).itemsize
+        m = np.fromfile(fid, dtype=np.int32, count=1)[0]
+        n = np.fromfile(fid, dtype=np.int32, count=1)[0]
+        N = np.fromfile(fid, dtype=np.int32, count=1)[0]
+
+        v = np.fromfile(fid, dtype=dtype, count=N)
+        i = np.fromfile(fid, dtype=np.int32, count=N)
+        j = np.fromfile(fid, dtype=np.int32, count=N)
+    return sp.sparse.coo_matrix((v, (i, j)), shape=[m, n])
+
+
 ################################################################################
 
 
