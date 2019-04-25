@@ -7,7 +7,7 @@
 
 sparse_coo *sparse_coo_create(int m, int n, int N) {
   sparse_coo *A;
-  
+
   assert(m > 0);
   assert(n > 0);
   assert(N > 0);
@@ -19,9 +19,6 @@ sparse_coo *sparse_coo_create(int m, int n, int N) {
   A->n = n;
   A->N = N;
 
-  printf("---->\n");
-  printf("%d %d %d\n", m, n, N);
-  
   A->v = malloc(sizeof(elem) * N);
   assert(A->v);
 
@@ -50,7 +47,7 @@ void sparse_coo_destroy(sparse_coo **A) {
 
 void sparse_coo_printf_raw(const sparse_coo *A) {
   int i;
-  
+
   assert(A);
 
   for (i = 0; i < A->N; i++) {
@@ -68,7 +65,7 @@ sparse_coo *sparse_coo_import(char *fname) {
   int m, n, N;
   FILE *fid;
   int c;
-  
+
   assert(fname);
 
   fid = fopen(fname, "r");
@@ -77,7 +74,7 @@ sparse_coo *sparse_coo_import(char *fname) {
   c = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(c == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   c = fread(&m, sizeof(int), 1, fid);
   assert(c == 1);
 
@@ -97,9 +94,9 @@ sparse_coo *sparse_coo_import(char *fname) {
 
   c = fread(A->j, sizeof(int), N, fid);
   assert(c == N);
-  
+
   fclose(fid);
-  
+
   return A;
 }
 
@@ -108,7 +105,7 @@ void sparse_coo_export(char *fname, const sparse_coo *A) {
   FILE *fid;
   int c;
   int sizeof_elem;
-                    
+
   assert(fname);
   assert(A);
 
@@ -136,7 +133,7 @@ void sparse_coo_export(char *fname, const sparse_coo *A) {
 
   c = fwrite(A->j, sizeof(int), A->N, fid);
   assert(c == A->N);
-  
+
   fclose(fid);
-  
+
 }
