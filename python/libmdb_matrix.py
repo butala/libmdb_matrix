@@ -169,3 +169,41 @@ def export_r_filter_new(filename, H, dtype=np.double):
 
         H_dtype = np.asarray(H, dtype=dtype)
         H_dtype.tofile(fid)
+
+
+def export_sb_toe_r(filename, blocks, dtype=np.double):
+    rank = len(blocks.shape)
+
+    n = blocks.shape
+
+    n_phy = []
+    for dim in range(rank):
+        index = [slice(None)] * rank
+        count = 0
+        for i in range(n[dim]):
+            index[dim] = slice(i, i+1)
+            if any(blocks[tuple(index)].flat):
+                count += 1
+        n_phy.append(count)
+
+    with open(filename, 'w') as fid:
+        z = np.array([np.dtype(dtype).itemsize], dtype='int32')
+        z.tofile(fid)
+
+        z = np.array([rank], dtype='int32')
+        z.tofile(fid)
+
+        z = np.array(n_phy[::-1], dtype='int32')
+        z.tofile(fid)
+
+        z = np.array(n[::-1], dtype='int32')
+        z.tofile(fid)
+
+        index = tuple(slice(None, x) for x in n_phy)
+        blocks_phy = blocks[index]
+
+        z = np.array(blocks_phy.reshape((np.prod(n_phy),),
+                                        order='F'), dtype=dtype)
+        z.tofile(fid)
+
+    return filename
