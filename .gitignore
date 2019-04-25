@@ -8,3 +8,5 @@
 /libmdb_matrix_s.a
 /mdb_matrix_d.h
 /mdb_matrix_s.h
+/python/__pycache__
+/python/libmdb_matrix.egg-info
