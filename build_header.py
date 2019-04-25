@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 import getopt, sys, re
 
@@ -37,7 +37,7 @@ if out_filename == "":
 
 try:
     out_fid = open(out_filename, "w")
-except IOError, (errno, strerror):
+except (IOError, (errno, strerror)):
     print("Error opening file: " + out_filename)
     print("Reason: " + strerror)
     sys.exit(3)
@@ -58,7 +58,7 @@ out_fid.write("\n")
 for header_filename in args:
     try:
         header_fid = open(header_filename, "r")
-    except IOError, (errno, strerror):
+    except (IOError, (errno, strerror)):
         print("Error opening file: " + header_filename)
         print("Reason: " + strerror)
         sys.exit(3)
