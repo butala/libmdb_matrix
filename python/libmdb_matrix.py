@@ -107,7 +107,7 @@ def export_full_r(filename, x, dtype=np.double):
     with open(filename, 'w') as fid:
         m, n = x.shape
 
-        z = np.array([numpy.dtype(dtype).itemsize], dtype='int32')
+        z = np.array([np.dtype(dtype).itemsize], dtype='int32')
         z.tofile(fid)
 
         z = np.array([m, n], dtype='int32')
@@ -124,7 +124,7 @@ def export_vector(filename, x, dtype=np.double):
     with open(filename, 'w') as fid:
         n = len(x)
 
-        z = np.array([numpy.dtype(dtype).itemsize], dtype='int32')
+        z = np.array([np.dtype(dtype).itemsize], dtype='int32')
         z.tofile(fid)
 
         z = np.array([n], dtype='int32')
@@ -143,7 +143,7 @@ def export_ivector(filename, x, dtype=np.int64):
 
 def export_rcs(filename, A, dtype=np.double):
     with open(filename, 'w') as fid:
-        A = csr_matrix(A, dtype=dtype)
+        A = sp.sparse.csr_matrix(A, dtype=dtype)
 
         m, n = A.shape
         N = A.nnz
@@ -152,7 +152,7 @@ def export_rcs(filename, A, dtype=np.double):
         j = A.indices
         r = A.indptr
 
-        z = np.array([numpy.dtype(dtype).itemsize, m, n, N], dtype='int32')
+        z = np.array([np.dtype(dtype).itemsize, m, n, N], dtype='int32')
         z.tofile(fid)
 
         assert(j.dtype == 'int32')
@@ -168,7 +168,7 @@ def export_diag(filename, A, dtype=np.double):
         m, n = A.shape
         v = np.asarray(A.diagonal(), dtype=dtype)
 
-        z = np.array([numpy.dtype(dtype).itemsize, m, n], dtype=int32)
+        z = np.array([np.dtype(dtype).itemsize, m, n], dtype=int32)
         z.tofile(fid)
 
         v.tofile(fid)
@@ -176,7 +176,7 @@ def export_diag(filename, A, dtype=np.double):
 
 def export_r_filter_new(filename, H, dtype=np.double):
     with open(filename, 'w') as fid:
-        header = np.array([numpy.dtype(dtype).itemsize, H.ndim], dtype='int32')
+        header = np.array([np.dtype(dtype).itemsize, H.ndim], dtype='int32')
         n_log = np.array(H.shape, dtype='int32')
         header.tofile(fid)
         n_log.tofile(fid)
