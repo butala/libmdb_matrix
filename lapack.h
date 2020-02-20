@@ -1,7 +1,14 @@
 #ifndef LAPACK_H
 #define LAPACK_H
 
+#ifdef OSX
+#include <cblas.h>
+#include <clapack.h>
+#define LAPACK_ROW_MAJOR CblasRowMajor
+#define LAPACK_COL_MAJOR CblasColMajor
+#else
 #include <lapacke.h>
+#endif
 
 #include "elem.h"
 
@@ -16,7 +23,7 @@ int epotrf(const int order, const char uplo,
 
 int epotrs(const int order, const char uplo,
 	   const int N, const int NRHS,
-	   const elem *A, const int lda, elem *B, const int ldb);
+	   elem *A, const int lda, elem *B, const int ldb);
 
 
 int eppsv(const int order, const char uplo,
@@ -28,6 +35,6 @@ int epptrf(const int order, const char uplo,
 
 int epptrs(const int order, const char uplo,
 	   const int N, const int NRHS,
-	   const elem *A, elem *B, const int ldb);
+	   elem *A, elem *B, const int ldb);
 
 #endif

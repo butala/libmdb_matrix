@@ -23,8 +23,11 @@ int main(int argc, char **argv) {
   c_psf_3d_set_imag0(A);
 
   for (i = 0; i < nx * ny * nz; i++) {
-    //A->h[i][0] = i+1;
+#if OSX
+    A->h[i][0] = i+1;
+#else
     A->h[i] = i+1;
+#endif
   }
 
   puts("Test complex psf_3d:");

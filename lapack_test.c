@@ -108,6 +108,7 @@ int main(int argc, char **argv) {
 
    */
 
+#ifndef OSX  
   r = epotrf(LAPACK_ROW_MAJOR, 'U', N, A->v_vector, A->n);
   assert(r == 0);
 
@@ -238,7 +239,8 @@ int main(int argc, char **argv) {
   full_r_destroy(&A);
   full_r_destroy(&B);
 
-
+#endif
+  
   /****************************************************************************/
 
 

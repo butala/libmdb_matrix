@@ -29,22 +29,31 @@ int main(void) {
   h_r = r_filter_create(N);
 
   for (i = 0; i < N; i++) {
-    //h_c->h[i][0] = N - i;
+#ifdef OSX
+    h_c->h[i][0] = N - i;
+#else
     h_c->h[i] = N - i;
+#endif
     h_rs1->h[i] = N - i;
     h_rs2->h[i] = N - i;
   }
   c_filter_set_imag0(h_c);
 
   for (i = 0; i < x_rs1->n; i++) {
-    //x_rs1->h[i][0] = i;
+#ifdef OSX
+    x_rs1->h[i][0] = i;
+#else
     x_rs1->h[i] = i;
+#endif
   }
   c_filter_set_imag0(x_rs1);
 
   for (i = 0; i < x_rs2->n; i++) {
-    //x_rs2->h[i][0] = i;
+#ifdef OSX
+    x_rs2->h[i][0] = i;
+#else
     x_rs2->h[i] = i;
+#endif
   }
   c_filter_set_imag0(x_rs2);
 

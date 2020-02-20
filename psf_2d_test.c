@@ -31,8 +31,11 @@ int main(void) {
   c_ptr = p_c->h;
   for (i = 0; i < ny; i++) {
     for (j = 0; j < nx; j++) {
-      //p_c->h[i + j*ny][0] = (i+1)*(j + i*nx + 1);
+#ifdef OSX
+      p_c->h[i + j*ny][0] = (i+1)*(j + i*nx + 1);
+#else
       p_c->h[i + j*ny] = (i+1)*(j + i*nx + 1);
+#endif
     }
   }
   c_psf_2d_set_imag0(p_c);

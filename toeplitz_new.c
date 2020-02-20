@@ -403,7 +403,7 @@ void sb_toe_export(const char *filename, const sb_toe *A) {
 void sb_toe_export_fid(FILE *fid, const sb_toe *A) {
   int i;
   int r;
-  int sizeof_elem;
+  int sizeof_elem = 0;
   
   assert(fid);
   assert(A);

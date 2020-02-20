@@ -33,8 +33,11 @@ int main(void) {
   count = 1;
   for (i = 0; i < ny; i++) {
     for (j = 0; j < nx; j++) {
-      //(*c_ptr)[0] = count*(i+1);
+#ifdef OSX
+      (*c_ptr)[0] = count*(i+1);
+#else
       *c_ptr = count*(i+1);
+#endif      
       c_ptr++;
       count++;
     }

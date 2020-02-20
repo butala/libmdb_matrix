@@ -6,11 +6,12 @@ PWD := $(shell pwd)
 UNAME := $(shell uname)
 MACHINE := $(shell uname -m)
 
-LIBS = -lm -lgsl -llapacke
+LIBS = -lm -lgsl
 LDFLAGS = -L.
 
 ifeq ($(UNAME),Linux)
    DEFINES = -DLINUX -DOPENBLAS
+   LIBS += -llapacke
    ifeq ($(MACHINE),x86_64)
       DEFINES += -DLONG_PTR
        LIBS += -lopenblas
@@ -26,7 +27,8 @@ ifeq ($(UNAME),Linux)
    endif
 else ifeq ($(UNAME),Darwin)
    DEFINES = -DOSX -DLONG_PTR -DVECLIB
-   LIBS += -lc -framework vecLib
+   LIBS += -lc -framework Accelerate
+   INCLUDE_DIR += -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/Current/Frameworks/vecLib.framework/Headers
 else
    $(error $(UNAME) is not supported!)
 endif
@@ -41,7 +43,7 @@ STRICT_WARNINGS = -W -Wall -ansi -pedantic -Wbad-function-cast -Wcast-align \
                   -Wredundant-decls -Wshadow -Wstrict-prototypes -Wwrite-strings
 
 CPPFLAGS = $(MILD_WARNINGS) $(INCLUDE_DIR)
-CFLAGS = $(CPPFLAGS) -O3 -g
+CFLAGS = $(CPPFLAGS) -O3 -g 
 CFLAGS_PIC := $(CFLAGS) -fPIC
 
 #DEFINES += $(DEFINES) -DNDEBUG
