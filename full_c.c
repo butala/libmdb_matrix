@@ -6,7 +6,7 @@
 #elif defined OPENBLAS
 #include <cblas-openblas.h>
 #elif defined VECLIB
-#include <cblas.h>
+//#include <cblas.h>
 #else
 #error 0
 #endif

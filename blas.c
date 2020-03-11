@@ -3,7 +3,7 @@
 #elif defined OPENBLAS
 #include <cblas-openblas.h>
 #elif defined VECLIB
-#include <cblas.h>
+//#include <cblas.h>
 #elif defined ACML
 #include <acml.h>
 #else

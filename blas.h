@@ -6,7 +6,8 @@
 #elif defined OPENBLAS
 #include <cblas-openblas.h>
 #elif defined VECLIB
-#include <cblas.h>
+//#include <cblas.h>
+#include <gsl/gsl_cblas.h>
 #elif defined ACML
 #include <acml.h>
 #else

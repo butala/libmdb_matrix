@@ -2,7 +2,8 @@
 #define LAPACK_H
 
 #ifdef OSX
-#include <cblas.h>
+//#include <cblas.h>
+#include <gsl/gsl_cblas.h>
 #include <clapack.h>
 #define LAPACK_ROW_MAJOR CblasRowMajor
 #define LAPACK_COL_MAJOR CblasColMajor
