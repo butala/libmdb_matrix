@@ -26,9 +26,9 @@ int eposv(const int order, const char uplo,
 #endif
   return info;
 #else
-#ifdef DOUBLE_ELEM    
+#ifdef DOUBLE_ELEM
   return LAPACKE_dposv(order, uplo, N, NRHS, A, lda, B, ldb);
-#elseif defined FLOAT_ELEM
+#elif defined FLOAT_ELEM
   return LAPACKE_sposv(order, uplo, N, NRHS, A, lda, B, ldb);
 #else
 #error ?
@@ -76,7 +76,7 @@ int epotrs(const int order, const char uplo,
   int NRHS_ = NRHS;
   int lda_ = lda;
   int ldb_ = ldb;
-  
+
   assert(order == LAPACK_COL_MAJOR);
 #ifdef DOUBLE_ELEM
   assert(dpotrs_(&uplo_, &N_, &NRHS_, A, &lda_, B, &ldb_, &info) == 0);
@@ -94,7 +94,7 @@ int epotrs(const int order, const char uplo,
 #else
 #error ?
 #endif
-#endif  
+#endif
 }
 
 
@@ -107,7 +107,7 @@ int eppsv(const int order, const char uplo,
   int N_ = N;
   int NRHS_ = NRHS;
   int ldb_ = ldb;
-  
+
   assert(order == LAPACK_COL_MAJOR);
 #ifdef DOUBLE_ELEM
   assert(dppsv_(&uplo_, &N_, &NRHS_, A, B, &ldb_, &info) == 0);
@@ -117,7 +117,7 @@ int eppsv(const int order, const char uplo,
 #error ?
 #endif
   return info;
-#else  
+#else
 #ifdef DOUBLE_ELEM
     return LAPACKE_dppsv(order, uplo, N, NRHS, A, B, ldb);
 #elif FLOAT_ELEM
@@ -125,7 +125,7 @@ int eppsv(const int order, const char uplo,
 #else
 #error ?
 #endif
-#endif    
+#endif
 }
 
 
@@ -135,7 +135,7 @@ int epptrf(const int order, const char uplo,
   int info;
   char uplo_ = uplo;
   int N_ = N;
-  
+
   assert(order == LAPACK_COL_MAJOR);
 #ifdef DOUBLE_ELEM
   assert(dpptrf_(&uplo_, &N_, A, &info) == 0);
@@ -166,7 +166,7 @@ int epptrs(const int order, const char uplo,
   int N_ = N;
   int NRHS_ = NRHS;
   int ldb_ = ldb;
-  
+
   assert(order == LAPACK_COL_MAJOR);
 #ifdef DOUBLE_ELEM
   assert(dpptrs_(&uplo_, &N_, &NRHS_, A, B, &ldb_, &info) == 0);
@@ -176,7 +176,7 @@ int epptrs(const int order, const char uplo,
 #error ?
 #endif
   return info;
-#else    
+#else
 #ifdef DOUBLE_ELEM
     return LAPACKE_dpptrs(order, uplo, N, NRHS, A, B, ldb);
 #elif FLOAT_ELEM
