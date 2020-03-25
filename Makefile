@@ -43,7 +43,7 @@ STRICT_WARNINGS = -W -Wall -ansi -pedantic -Wbad-function-cast -Wcast-align \
                   -Wredundant-decls -Wshadow -Wstrict-prototypes -Wwrite-strings
 
 CPPFLAGS = $(MILD_WARNINGS) $(INCLUDE_DIR)
-CFLAGS = $(CPPFLAGS) -O3 -g 
+CFLAGS = $(CPPFLAGS) -O3 -g
 CFLAGS_PIC := $(CFLAGS) -fPIC
 
 #DEFINES += $(DEFINES) -DNDEBUG
