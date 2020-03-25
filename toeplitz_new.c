@@ -1052,7 +1052,7 @@ static elem sb_toe_r_nz_it_move_right(sb_toe_r_it *A_it) {
       assert(i-1 >= 0);
       counter_tick_digit_reset(A_it->j_state, i-1);
 
-      /* Subtracting to because i will be incremented at the end of
+      /* Subtracting 2 because i will be incremented at the end of
 	 the loop */
       i -= 2;
       continue;
