@@ -86,6 +86,47 @@ def import_diag(filename):
         return sp.sparse.spdiags(v, 0, m, n)
 
 
+def import_sb_toe_r(filename):
+    """Load a recursive symmetric block Toeplitz matrix and store it in
+    COO format. This an inefficient way to represent the matrix --- it
+    would be better to use, e.g., a block sparse row representation,
+    but this is also not a perfect fit as we would want to store it as
+    a recursive block sparse row matrix (i.e., sparse blocks of sparse
+    blocks of ... of symmetric Toeplitz).
+    """
+    with open(filename, 'r') as fid:
+        nbytes = int(np.fromfile(fid, dtype=np.int32, count=1))
+        rank = int(np.fromfile(fid, dtype=np.int32, count=1))
+        assert rank > 0
+        n_phy = np.fromfile(fid, dtype=np.int32, count=rank)
+        n = np.fromfile(fid, dtype=np.int32, count=rank)
+        v = np.fromfile(fid, dtype=map_bytes_to_dtype(nbytes))
+        assert len(v) == np.prod(n_phy)
+    # now construct coo matrix
+    N = np.prod(n)
+    A_v = []
+    A_i = []
+    A_j = []
+    block_size = np.cumprod(n[::-1])[::-1][1:]
+    phy_block_size = np.append(np.cumprod(n_phy[::-1])[::-1][1:], 1)
+    for row in range(N):
+        for col in range(N):
+            b_i = row
+            b_j = col
+            b = []
+            for block_size_k in block_size:
+                r1, b_i = divmod(b_i, block_size_k)
+                r2, b_j = divmod(b_j, block_size_k)
+                b.append(abs(r1 - r2))
+            b.append(abs(b_i - b_j))
+            if not any(b >= n_phy):
+                index_v = np.sum(b * phy_block_size)
+                A_v.append(v[index_v])
+                A_i.append(row)
+                A_j.append(col)
+    return scipy.sparse.coo_matrix((A_v, (A_i, A_j)), shape=(N, N))
+
+
 def import_sparse_coo(fname, dtype=np.double):
     with open(fname, 'rb') as fid:
         sizeof_elem = np.fromfile(fid, dtype=np.int32, count=1)[0]
