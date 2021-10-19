@@ -1,4 +1,4 @@
-CC = gcc
+CC = cc
 LIBTOOL = libtool
 AR = ar
 
@@ -6,7 +6,7 @@ PWD := $(shell pwd)
 UNAME := $(shell uname)
 MACHINE := $(shell uname -m)
 
-LIBS = -lm -lgsl
+LIBS = -lgsl
 LDFLAGS = -L.
 
 ifeq ($(UNAME),Linux)
@@ -27,8 +27,8 @@ ifeq ($(UNAME),Linux)
    endif
 else ifeq ($(UNAME),Darwin)
    DEFINES = -DOSX -DLONG_PTR -DVECLIB
-   LIBS += -lc -framework Accelerate
-   INCLUDE_DIR += -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/Current/Frameworks/vecLib.framework/Headers
+   LIBS += -framework Accelerate -F/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks
+   INCLUDE_DIR += -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
 else
    $(error $(UNAME) is not supported!)
 endif
@@ -102,7 +102,7 @@ ifeq ($(UNAME),Linux)
 else ifeq ($(UNAME),Darwin)
    libmdb_matrix_s.so: mdb_matrix_s.h
    libmdb_matrix_s.so: $(LIB_OBJ_S)
-	$(LIBTOOL) -dynamic -o $@ $(LIB_OBJ_S) -install_name $(PWD)/$@ $(SO_LIBS_S) $(LDFLAGS)
+	$(CC) -dynamiclib -o $@ $(LIB_OBJ_S) -install_name $(PWD)/$@ $(SO_LIBS_S) $(LDFLAGS)
 endif
 
 # The order of the header files appear matters!
@@ -118,7 +118,7 @@ ifeq ($(UNAME),Linux)
 else ifeq ($(UNAME),Darwin)
    libmdb_matrix_d.so: mdb_matrix_d.h
    libmdb_matrix_d.so: $(LIB_OBJ_D)
-	$(LIBTOOL) -dynamic -o $@ $(LIB_OBJ_D) -install_name $(PWD)/$@ $(SO_LIBS_D) $(LDFLAGS)
+	$(CC) -dynamiclib -o $@ $(LIB_OBJ_D) -install_name $(PWD)/$@ $(SO_LIBS_D) $(LDFLAGS)
 endif
 
 # The order the header files appear matters!
