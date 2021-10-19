@@ -86,7 +86,7 @@ def import_diag(filename):
         return sp.sparse.spdiags(v, 0, m, n)
 
 
-def import_sb_toe_r(filename):
+def import_sb_toe_r(filename, verbose=False):
     """Load a recursive symmetric block Toeplitz matrix and store it in
     COO format. This an inefficient way to represent the matrix --- it
     would be better to use, e.g., a block sparse row representation,
@@ -102,6 +102,10 @@ def import_sb_toe_r(filename):
         n = np.fromfile(fid, dtype=np.int32, count=rank)
         v = np.fromfile(fid, dtype=map_bytes_to_dtype(nbytes))
         assert len(v) == np.prod(n_phy)
+    if verbose:
+        print(f'rank = {rank}')
+        print(f'n = {n}')
+        print(f'n_phy = {n_phy}')
     # now construct coo matrix
     N = np.prod(n)
     A_v = []
