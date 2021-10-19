@@ -75,7 +75,7 @@ TEST_TARGET = full_r_test full_c_test sparse_rcs_test sparse_rcs_mvm_test \
               filter_new_test fftwe_test lapack_test llist_test \
 	      psf_3d_test vector_test zfull_r_test sparse_rcs_mmm_test \
               lt_c_test toeplitz_new_test lt_r_test sparse_lil_test \
-	      counter_test util_test
+	      counter_test util_test sb_toe_r_to_coo
 
 TEST_TARGET_OBJ = $(addsuffix .o, $(TEST_TARGET))
 
@@ -184,6 +184,8 @@ sparse_lil_test: sparse_lil_test.o
 counter_test: counter_test.o
 
 util_test: util_test.o
+
+sb_toe_r_to_coo: sb_toe_r_to_coo.o
 
 
 $(TEST_TARGET): mdb_matrix_d.h mdb_matrix_s.h
