@@ -22,8 +22,8 @@ int main(void) {
   sparse_rcs *A;
   vector *x, *y, *y_blas;
   int i;
-  const int N = 2^1;
-  
+  const int N = 2;
+
   A = sparse_rcs_import("A");
 
   x = vector_create(A->n);
@@ -31,7 +31,7 @@ int main(void) {
   y_blas = vector_create(A->m);
 
   init_x(x);
-  
+
   for (i = 0; i < N; i++) {
     sparse_rcs_mvm(A, x, y);
   }
@@ -39,11 +39,11 @@ int main(void) {
   for (i = 0; i < N; i++) {
     sparse_rcs_mvm_blas(A, x, y_blas);
   }
-  
+
   sparse_rcs_destroy(&A);
   vector_destroy(&x);
   vector_destroy(&y);
   vector_destroy(&y_blas);
-  
+
   return 0;
 }
