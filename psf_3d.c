@@ -4,7 +4,7 @@
 
 #include "psf_3d.h"
 #include "fftwe.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 /******************************************************************************/
@@ -38,10 +38,10 @@ c_psf_3d *c_psf_3d_create(int nx, int ny, int nz) {
 
   p->backward_plan = fftwe_plan_dft_3d(nx, ny, nz, p->h, p->h,
 				       FFTW_BACKWARD, FFTW_ESTIMATE);
-    
+
   return p;
 }
-  
+
 void c_psf_3d_destroy(c_psf_3d **p) {
   assert(p);
   assert(*p);
@@ -73,7 +73,7 @@ void c_psf_3d_idft(c_psf_3d *p) {
 
 void c_psf_3d_printf(c_psf_3d *p) {
   int ix, iy, iz;
-  
+
   assert(p);
 
   for (iz = 0; iz < p->nz; iz++) {
@@ -89,13 +89,13 @@ void c_psf_3d_printf(c_psf_3d *p) {
 
 void c_psf_3d_set_real0(c_psf_3d *p) {
   assert(p);
-  
+
   escal(p->N, 0, &(p->h[0][0]), 2);
 }
 
 void c_psf_3d_set_imag0(c_psf_3d *p) {
   assert(p);
-  
+
   escal(p->N, 0, &(p->h[0][1]), 2);
 }
 
@@ -115,7 +115,7 @@ void c_psf_3d_set0(c_psf_3d *p) {
 
 r_psf_3d *r_psf_3d_create(int nx, int ny, int nz) {
   r_psf_3d *p;
-  
+
   assert(nx > 0);
   assert(ny > 0);
   assert(nz > 0);
@@ -134,22 +134,22 @@ r_psf_3d *r_psf_3d_create(int nx, int ny, int nz) {
   p->nx_phy = nx;
   p->ny_phy = ny;
   p->nz_phy = (floor(nz/2) + 1) * 2;
-  
+
   p->N_phy = p->nx_phy * p->ny_phy * p->nz_phy;
 
   p->h = fftwe_malloc(sizeof(elem) * p->N_phy);
   assert(p->h);
-  
+
   p->d = S;
 
   p->forward_plan = fftwe_plan_dft_r2c_3d(nx, ny, nz,
 					  p->h, (fftwe_complex *) p->h,
 					  FFTW_ESTIMATE);
-  
+
   p->backward_plan = fftwe_plan_dft_c2r_3d(nx, ny, nz,
 					   (fftwe_complex *) p->h, p->h,
 					   FFTW_ESTIMATE);
-  
+
   return p;
 }
 
@@ -165,7 +165,7 @@ void r_psf_3d_destroy(r_psf_3d **p) {
   free(*p);
   *p = NULL;
 }
-  
+
 void r_psf_3d_dft(r_psf_3d *p) {
   assert(p);
 
@@ -179,13 +179,13 @@ void r_psf_3d_idft(r_psf_3d *p) {
 
   fftwe_execute(p->backward_plan);
   escal(p->N_phy, ((elem) 1)/p->N_log, p->h, 1);
-    
+
   p->d = fftwe_domain_flip(p->d);
 }
 
 void r_psf_3d_printf(r_psf_3d *p) {
   int ix, iy, iz;
-  
+
   assert(p);
 
   if (p->d == S) {

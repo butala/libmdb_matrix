@@ -31,7 +31,7 @@ int main(void) {
   c_ptr = p_c->h;
   for (i = 0; i < ny; i++) {
     for (j = 0; j < nx; j++) {
-#ifdef OSX
+#ifdef OSX_BLAH
       p_c->h[i + j*ny][0] = (i+1)*(j + i*nx + 1);
 #else
       p_c->h[i + j*ny] = (i+1)*(j + i*nx + 1);

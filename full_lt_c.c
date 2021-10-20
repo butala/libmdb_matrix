@@ -4,7 +4,7 @@
 
 #include "util.h"
 #include "full_lt_c.h"
-#include "lapack.h"
+#include "elapack.h"
 
 
 static int lt_c_get_index(const lt_c *A, const int i, const int j);

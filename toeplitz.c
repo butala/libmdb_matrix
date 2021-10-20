@@ -5,7 +5,7 @@
 #include <assert.h>
 
 #include "toeplitz.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 /*************
@@ -18,7 +18,7 @@ s_toeplitz *s_toeplitz_create(int n, int nnz_row0) {
 
   assert(n > 0);
   assert(nnz_row0 > 0);
-  
+
   A = malloc(sizeof(s_toeplitz));
   assert(A);
 
@@ -38,10 +38,10 @@ s_toeplitz *s_toeplitz_create(int n, int nnz_row0) {
 
   A->j = malloc(sizeof(int) * (2*nnz_row0 - 1));
   assert(A->j);
-  
+
   A->row = -1;
   A->nnz = 0;
-  
+
   return A;
 }
 
@@ -62,16 +62,16 @@ void s_toeplitz_destroy(s_toeplitz **A) {
 
 void s_toeplitz_get_row(s_toeplitz *A, int row) {
   int i, index;
-  
+
   assert(A);
   assert(row >= 0 && row < A->n);
 
   if (A->row == row) {
     return;
   }
-  
+
   A->row = row;
-  
+
   index = 0;
   /* Build portion of the row to the left of the diagonal */
   for (i = A->nnz_row0 - 1; i >= 1; i--) {
@@ -110,7 +110,7 @@ void s_toeplitz_printf_row(s_toeplitz *A, int row) {
 
 void s_toeplitz_printf_current_row(s_toeplitz *A) {
   int i, index;
-  
+
   assert(A);
 
   index = 0;
@@ -128,12 +128,12 @@ void s_toeplitz_printf_current_row(s_toeplitz *A) {
 
 void s_toeplitz_printf(s_toeplitz *A) {
   int row;
-  
+
   assert(A);
 
   for (row = 0; row < A->n; row++) {
     s_toeplitz_printf_row(A, row);
-    
+
     if (row != A->n - 1) {
       printf("\n");
     }
@@ -144,16 +144,16 @@ void s_toeplitz_printf(s_toeplitz *A) {
 s_toeplitz *s_toeplitz_import(const char *filename) {
   s_toeplitz *A;
   FILE *fid;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
   assert(fid);
 
   A = s_toeplitz_import_fid(fid);
-  
+
   fclose(fid);
-  
+
   return A;
 }
 
@@ -163,13 +163,13 @@ s_toeplitz *s_toeplitz_import_fid(FILE *fid) {
   int N, nnz_row0;
   int r;
   int sizeof_elem;
-  
+
   assert(fid);
 
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&N, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -192,14 +192,14 @@ s_toeplitz *s_toeplitz_import_fid(FILE *fid) {
     assert(0);
     exit(0);
   }
-  
+
   return A;
 }
 
 
 void s_toeplitz_export(const char *filename, const s_toeplitz *A) {
   FILE *fid;
-  
+
   assert(filename);
   assert(A);
 
@@ -207,7 +207,7 @@ void s_toeplitz_export(const char *filename, const s_toeplitz *A) {
   assert(fid);
 
   s_toeplitz_export_fid(fid, A);
-  
+
   fclose(fid);
 }
 
@@ -215,7 +215,7 @@ void s_toeplitz_export(const char *filename, const s_toeplitz *A) {
 void s_toeplitz_export_fid(FILE *fid, const s_toeplitz *A) {
   int r;
   int sizeof_elem;
-  
+
   assert(A);
 
   sizeof_elem = sizeof(elem);
@@ -238,7 +238,7 @@ void s_toeplitz_export_fid(FILE *fid, const s_toeplitz *A) {
 
 int s_toeplitz_get_nnz(s_toeplitz *A) {
   int i, nnz;
-  
+
   assert(A);
 
   nnz = 0;
@@ -265,7 +265,7 @@ int s_toeplitz_get_nnz(s_toeplitz *A) {
 
 s_block_toeplitz *s_block_toeplitz_create(int K) {
   s_block_toeplitz *A;
-  
+
   assert(K > 0);
 
   A = malloc(sizeof(s_block_toeplitz));
@@ -274,7 +274,7 @@ s_block_toeplitz *s_block_toeplitz_create(int K) {
   A->n = -1;
   A->K = K;
   A->n_block = -1;
-  
+
   A->B = malloc(sizeof(s_toeplitz *) * K);
   assert(A->B);
 
@@ -284,14 +284,14 @@ s_block_toeplitz *s_block_toeplitz_create(int K) {
   A->nnz = 0;
 
   A->max_row_length = -1;
-  
+
   return A;
 }
 
 
 void s_block_toeplitz_destroy(s_block_toeplitz **A) {
   int k;
-  
+
   assert(A);
   assert(*A);
 
@@ -328,7 +328,7 @@ s_block_toeplitz *s_block_toeplitz_import(const char *filename) {
   int K, k, max_row_length;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -337,13 +337,13 @@ s_block_toeplitz *s_block_toeplitz_import(const char *filename) {
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&K, sizeof(int), 1, fid);
   assert(r == 1);
 
   A = s_block_toeplitz_create(K);
   A->n_block = -1;
-  
+
   max_row_length = 0;
   for (k = 0; k < K; k++) {
     A->B[k] = s_toeplitz_import_fid(fid);
@@ -372,7 +372,7 @@ s_block_toeplitz *s_block_toeplitz_import(const char *filename) {
 	max_row_length += 2*(2*A->B[k]->nnz_row0 - 1);
       }
     }
-    
+
     if (k == 0) {
       A->n_block = A->B[0]->n;
     }
@@ -380,7 +380,7 @@ s_block_toeplitz *s_block_toeplitz_import(const char *filename) {
       assert(A->B[k]->n == A->n_block);
     }
   }
-  
+
   fclose(fid);
 
   A->n = K*A->n_block;
@@ -406,7 +406,7 @@ void s_block_toeplitz_export(const char *filename, const s_block_toeplitz *A) {
   int k;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(A);
 
@@ -435,7 +435,7 @@ void s_block_toeplitz_export(const char *filename, const s_block_toeplitz *A) {
       assert(0);
     }
   }
-  
+
   fclose(fid);
 }
 
@@ -455,7 +455,7 @@ void s_block_toeplitz_printf_blocks(const s_block_toeplitz *A) {
       assert(0);
     }
     printf("\n");
-    
+
     if (k != A->K -1) {
       printf("\n");
     }
@@ -467,7 +467,7 @@ void s_block_toeplitz_get_row(s_block_toeplitz *A, int row) {
   div_t d;
   int l, r, k, i;
   int index, block, shift;
-  
+
   assert(A);
   assert(row >= 0 && row <= A->n);
 
@@ -484,18 +484,18 @@ void s_block_toeplitz_get_row(s_block_toeplitz *A, int row) {
 
     if (A->B[block]->nnz_row0 > 0) {
       s_toeplitz_get_row(A->B[block], r);
-      
+
       assert(index + A->B[block]->nnz <= A->max_row_length);
 
       /* Copy v */
       memcpy(&(A->v[index]), A->B[block]->v, A->B[block]->nnz * sizeof(elem));
-      
+
       /* Copy and shift j */
       shift = k * A->n_block;
       for (i = 0; i < A->B[block]->nnz; i++) {
 	A->j[index + i] = A->B[block]->j[i] + shift;
       }
-      
+
       index += A->B[block]->nnz;
     }
     else {
@@ -509,7 +509,7 @@ void s_block_toeplitz_get_row(s_block_toeplitz *A, int row) {
 
 void s_block_toeplitz_printf_row(s_block_toeplitz *A, int row) {
   int i, index;
-  
+
   assert(A);
   assert(row >= 0 && row < A->n);
 
@@ -534,7 +534,7 @@ elem s_block_toeplitz_get(s_block_toeplitz *A, int i, int j) {
   int block_index;
   int i_rel, j_rel, column_index;
   int col;
-  
+
   assert(A);
   assert(i >= 0 && i < A->n);
   assert(j >= 0 && j < A->n);
@@ -566,7 +566,7 @@ elem s_block_toeplitz_get(s_block_toeplitz *A, int i, int j) {
 
 int s_block_toeplitz_get_nnz(s_block_toeplitz *A) {
   int i, nnz;
-  
+
   assert(A);
 
   nnz = 0;
@@ -574,7 +574,7 @@ int s_block_toeplitz_get_nnz(s_block_toeplitz *A) {
   if (A->B[0] && A->B[0]->nnz_row0 > 0) {
     nnz += A->K*s_toeplitz_get_nnz(A->B[0]);
   }
-  
+
   for (i = 1; i < A->K; i++) {
     if (A->B[i] && A->B[i]->nnz_row0 > 0) {
       nnz += 2*(A->K - i)*s_toeplitz_get_nnz(A->B[i]);
@@ -589,11 +589,11 @@ sparse_rcs *s_block_toeplitz_convert(s_block_toeplitz *A) {
   sparse_rcs *S;
   int i, l;
   int index;
-  
+
   assert(A);
 
   S = sparse_rcs_create(A->n, A->n, s_block_toeplitz_get_nnz(A));
-  
+
   index = 0;
   for (i = 0; i < A->n; i++) {
     s_block_toeplitz_get_row(A, i);
@@ -611,6 +611,6 @@ sparse_rcs *s_block_toeplitz_convert(s_block_toeplitz *A) {
   S->r[A->n] = index;
 
   assert(index == S->N);
-  
+
   return S;
 }

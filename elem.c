@@ -6,7 +6,7 @@
 #include <gsl/gsl_sf_bessel.h>
 
 #include "elem.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 static void z_elem_2_gsl_complex(gsl_complex *g, const z_elem *z);
@@ -22,7 +22,7 @@ boolean e_isnan(elem v) {
 
 void fprintf_elem(FILE *fid, elem v) {
   assert(fid);
-  
+
   if (fabse(v) < ELEM_EPSILON) {
     fprintf(fid, "%+f", 0.0);
   }
@@ -40,7 +40,7 @@ void fprintf_elem(FILE *fid, elem v) {
 
 void fprintf_elem_s(FILE *fid, elem v) {
   assert(fid);
-  
+
   fprintf_elem(fid, v);
   fputc((int) ' ', fid);
 }
@@ -48,7 +48,7 @@ void fprintf_elem_s(FILE *fid, elem v) {
 
 void fprintf_elem_n(FILE *fid, elem v) {
   assert(fid);
-  
+
   fprintf_elem(fid, v);
   fputc((int) '\n', fid);
 }
@@ -72,7 +72,7 @@ void printf_elem_n(elem v) {
 void fprintf_z_elem(FILE *fid, const z_elem *v) {
   assert(fid);
   assert(v);
-  
+
   fputc((int) '(', fid);
   fprintf_elem_s(fid, (*v)[0]);
   fprintf_elem(fid, (*v)[1]);
@@ -132,20 +132,20 @@ elem fabse(elem x) {
 void set0(elem *v, int n) {
   assert(v);
   assert(n >= 0);
-  
+
   escal(n, 0, v, 1);
 }
 
 
 void zset0(z_elem *v, int n) {
   z_elem zero;
-  
+
   assert(v);
   assert(n >= 0);
 
   zero[0] = 0;
   zero[1] = 0;
-  
+
   zescal(n, zero, v, 1);
 }
 
@@ -204,7 +204,7 @@ void zmul(z_elem *y, const z_elem *x) {
 
   assert(y);
   assert(x);
-  
+
   z[0] = (*y)[0];
   z[1] = (*y)[1];
 
@@ -216,7 +216,7 @@ void zmul(z_elem *y, const z_elem *x) {
 /* y = sqrt(x) (the principal square root), where y and x are complex */
 void zsqrt(z_elem *y, const z_elem *x) {
   elem r;
-  
+
   assert(y);
   assert(x);
 
@@ -247,7 +247,7 @@ static void gsl_complex_2_z_elem(z_elem *z, const gsl_complex *g) {
 /* y = sin(x), where y and x are complex */
 void zsin(z_elem *y, const z_elem *x) {
   gsl_complex a, b;
-  
+
   assert(y);
   assert(x);
 
@@ -261,7 +261,7 @@ void zsin(z_elem *y, const z_elem *x) {
 /* y = cos(x), where y and x are complex */
 void zcos(z_elem *y, const z_elem *x) {
   gsl_complex a, b;
-  
+
   assert(y);
   assert(x);
 
@@ -275,7 +275,7 @@ void zcos(z_elem *y, const z_elem *x) {
 /* y = arcsin(x), where y and x are complex */
 void zarcsin(z_elem *y, const z_elem *x) {
   gsl_complex a, b;
-  
+
   assert(y);
   assert(x);
 
@@ -289,7 +289,7 @@ void zarcsin(z_elem *y, const z_elem *x) {
 /* y = arccos(x), where y and x are complex */
 void zarccos(z_elem *y, const z_elem *x) {
   gsl_complex a, b;
-  
+
   assert(y);
   assert(x);
 

@@ -3,7 +3,7 @@
 #include <assert.h>
 
 #include "full_lt_r.h"
-#include "lapack.h"
+#include "elapack.h"
 
 
 static int lt_r_get_index(const lt_r *A, const int i, const int j);
@@ -13,7 +13,7 @@ static int lt_r_get_submatrix_index(const int i, const int j,
 
 lt_r *lt_r_create(int m, int n) {
   lt_r *A;
-  
+
   assert(m > 0);
   assert(n > 0);
 
@@ -33,7 +33,7 @@ lt_r *lt_r_create(int m, int n) {
   A->v = malloc(sizeof(elem) * A->N);
   assert(A->v);
 
-  
+
   return A;
 }
 
@@ -54,8 +54,8 @@ lt_r *lt_r_import(const char *filename) {
   int m, n;
   FILE *fid;
   int r;
-  
-  
+
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -71,9 +71,9 @@ lt_r *lt_r_import(const char *filename) {
 
   r = fread(A->v, sizeof(elem), A->N, fid);
   assert(r == A->N);
-  
+
   fclose(fid);
-  
+
   return A;
 }
 
@@ -123,10 +123,10 @@ int lt_r_get_submatrix_index(const int i, const int j,
 elem lt_r_get_submatrix(const lt_r *A, const int i, const int j,
 			const int M, const int N) {
   int index;
-  
+
   assert(A);
   assert(i >= j);
-  
+
   index = lt_r_get_submatrix_index(i, j, M, N);
   return A->v[index];
 }
@@ -134,7 +134,7 @@ elem lt_r_get_submatrix(const lt_r *A, const int i, const int j,
 
 void lt_r_set(const lt_r *A, const int i, const int j, const elem v) {
   int index;
-  
+
   assert(A);
 
   index = lt_r_get_index(A, i, j);
@@ -144,7 +144,7 @@ void lt_r_set(const lt_r *A, const int i, const int j, const elem v) {
 
 void lt_r_add(const lt_r *A, const int i, const int j, const elem v) {
   int index;
-  
+
   assert(A);
 
   index = lt_r_get_index(A, i, j);
@@ -168,7 +168,7 @@ void lt_r_fprintf(FILE *fid, const lt_r *A) {
 void lt_r_submatrix_fprintf(FILE *fid, const lt_r *A,
 			    const int M, const int N) {
   int i, j, index;
-  
+
   assert(fid);
   assert(A);
 

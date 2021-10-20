@@ -3,7 +3,7 @@
 #include <assert.h>
 
 #include "sparse_lil.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 const int SPARSE_LIL_BLOCK_SIZE = 4;
@@ -39,36 +39,40 @@ sparse_lil *sparse_lil_create(int m, int n) {
 
 sparse_lil *sparse_lil_create_block_size(int m, int n, int block_size) {
   sparse_lil *A;
-  
+
   assert(m > 0);
   assert(n > 0);
   assert(block_size > 0);
-  
+
   A = malloc(sizeof(sparse_lil));
   assert(A);
-  
+
   A->row = malloc(m * sizeof(llist *));
   assert(A->row);
 
+  /*/
 #ifdef LONG_PTR
   memset((void *) A->row, (long int) NULL, m * sizeof(llist *));
-#else  
+#else
   memset((void *) A->row, (int) NULL, m * sizeof(llist *));
 #endif
-  
+  */
+
+  memset((void *) A->row, (uintptr_t) NULL, m * sizeof(llist *));
+
   A->m = m;
   A->n = n;
   A->N = 0;
-  
+
   A->block_size = block_size;
-  
+
   return A;
 }
 
 
 static void destroy_node(void *node_ptr_void) {
   sparse_lil_node *node_ptr;
-  
+
   assert(node_ptr_void);
 
   node_ptr = (sparse_lil_node *) node_ptr_void;
@@ -81,7 +85,7 @@ static void destroy_node(void *node_ptr_void) {
 
 void sparse_lil_destroy(sparse_lil **A) {
   int i;
-  
+
   assert(A);
   assert(*A);
 
@@ -111,14 +115,14 @@ static sparse_lil_node *create_node(const int block_size) {
   assert(node_ptr->j);
 
   node_ptr->count = 0;
-  
+
   return node_ptr;
 }
 
 
 void sparse_lil_append(sparse_lil *A, int i, int j, elem v) {
   sparse_lil_node *node_ptr;
-  
+
   assert(A);
   assert(i >= 0);
   assert(i < A->m);
@@ -136,12 +140,12 @@ void sparse_lil_append(sparse_lil *A, int i, int j, elem v) {
     llist_append(A->row[i], node_ptr);
 
     A->N++;
-    
+
     return;
   }
 
   node_ptr = (sparse_lil_node *) A->row[i]->tail->data;
-    
+
   if (node_ptr->count == A->block_size) {
     node_ptr = create_node(A->block_size);
     llist_append(A->row[i], node_ptr);
@@ -157,7 +161,7 @@ void sparse_lil_append(sparse_lil *A, int i, int j, elem v) {
 
 static void printf_node(void *node_ptr_void) {
   int i;
-  
+
   sparse_lil_node *node_ptr;
 
   assert(node_ptr_void);
@@ -174,7 +178,7 @@ static void printf_node(void *node_ptr_void) {
 
 void sparse_lil_printf(const sparse_lil *A) {
   int i;
-  
+
   assert(A);
 
   for (i = 0; i < A->m; i++) {
@@ -195,7 +199,7 @@ void sparse_lil_mmm(sparse_rcs *A, sparse_lil *B, full_c *C) {
   int index;
   sparse_lil_row_it B_it;
   elem A_v, B_v;
-  
+
   assert(A);
   assert(B);
   assert(C);
@@ -224,7 +228,7 @@ void sparse_lil_mmm(sparse_rcs *A, sparse_lil *B, full_c *C) {
 
 static void node_fun_wrap(void *node_ptr_void) {
   sparse_lil_node *node;
-  
+
   assert(node_ptr_void);
 
   node = (sparse_lil_node *) node_ptr_void;
@@ -235,12 +239,12 @@ static void node_fun_wrap(void *node_ptr_void) {
 void sparse_lil_foreach(sparse_lil *A,
 			void (*node_fun)(sparse_lil_node *)) {
   int i;
-  
+
   assert(A);
   assert(node_fun);
 
   NODE_FUN_WRAP_F = node_fun;
-  
+
   for (i = 0; i < A->m; i++) {
     if (A->row[i]) {
       llist_foreach(A->row[i], &node_fun_wrap);
@@ -256,7 +260,7 @@ static void scale_node(sparse_lil_node *node_ptr) {
 
 void sparse_lil_scal(sparse_lil *A, elem alpha) {
   assert(A);
-  
+
   SCALE_NODE_ALPHA = alpha;
 
   sparse_lil_foreach(A, &scale_node);
@@ -265,7 +269,7 @@ void sparse_lil_scal(sparse_lil *A, elem alpha) {
 
 static void get_row_count(void *node_ptr_void) {
   sparse_lil_node *node_ptr;
-  
+
   assert(node_ptr_void);
 
   node_ptr = (sparse_lil_node *) node_ptr_void;
@@ -277,7 +281,7 @@ static void get_row_count(void *node_ptr_void) {
 int sparse_lil_row_max(sparse_lil *A) {
   int i;
   int row_max;
-  
+
   assert(A);
 
   row_max = 0;
@@ -298,13 +302,13 @@ int sparse_lil_row_max(sparse_lil *A) {
 static void copy_node(void *node_ptr_void) {
   sparse_lil_node *node_ptr;
   int i;
-  
+
   assert(node_ptr_void);
   assert(COPY_NODE_LOC);
   assert(COPY_NODE_IDX >= 0);
 
   node_ptr = (sparse_lil_node *) node_ptr_void;
-  
+
   for (i = 0; i < node_ptr->count; i++) {
     COPY_NODE_LOC[COPY_NODE_IDX].v = node_ptr->v[i];
     COPY_NODE_LOC[COPY_NODE_IDX].j = node_ptr->j[i];
@@ -316,7 +320,7 @@ static void copy_node(void *node_ptr_void) {
 static int vj_pair_compare(const void *a, const void *b) {
   const sparse_lil_node *a_node;
   const sparse_lil_node *b_node;
-  
+
   assert(a);
   assert(b);
 
@@ -333,7 +337,7 @@ sparse_rcs *sparse_lil_2_rcs(sparse_lil *A) {
   vj_pair *sorted_node;
   int i, k, index;;
   int row_max;
-  
+
   B = sparse_rcs_create(A->m, A->n, A->N);
 
   row_max = sparse_lil_row_max(A);
@@ -341,7 +345,7 @@ sparse_rcs *sparse_lil_2_rcs(sparse_lil *A) {
   assert(sorted_node);
 
   B->r[0] = 0;
-  
+
   index = 0;
   for (i = 0; i < A->m; i++) {
     COPY_NODE_IDX = 0;
@@ -364,9 +368,9 @@ sparse_rcs *sparse_lil_2_rcs(sparse_lil *A) {
   for (i = 2; i < A->m + 1; i++) {
     B->r[i] = B->r[i-1] + B->r[i];
   }
-	 
+
   free(sorted_node);
-  
+
   return B;
 }
 
@@ -387,7 +391,7 @@ void sparse_lil_row_it_init(sparse_lil *A, int i, sparse_lil_row_it *it) {
     it->row_it.l = NULL;
     it->row_it.n = NULL;
   }
-  
+
   it->node_idx = -1;
   it->j = -1;
 }
@@ -395,7 +399,7 @@ void sparse_lil_row_it_init(sparse_lil *A, int i, sparse_lil_row_it *it) {
 
 boolean sparse_lil_row_it_has_next(sparse_lil_row_it *it) {
   sparse_lil_node *node;
-  
+
   assert(it);
 
   if (it->row_it.l == NULL) {
@@ -420,7 +424,7 @@ boolean sparse_lil_row_it_has_next(sparse_lil_row_it *it) {
 
 elem sparse_lil_row_it_next(sparse_lil_row_it *it) {
   sparse_lil_node *node;
-  
+
   assert(it);
   assert(sparse_lil_row_it_has_next(it));
 
@@ -436,7 +440,7 @@ elem sparse_lil_row_it_next(sparse_lil_row_it *it) {
       it->node_idx = 0;
     }
   }
-  
+
   it->node_idx++;
   it->j = node->j[it->node_idx-1];
   return node->v[it->node_idx-1];

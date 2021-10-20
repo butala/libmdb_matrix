@@ -3,14 +3,14 @@
 #include <assert.h>
 
 #include "zfull_c.h"
-#include "blas.h"
+#include "eblas.h"
 #include "elem.h"
 
 
 zfull_c *zfull_c_create(int m, int n) {
   zfull_c *A = NULL;
   int j;
-  
+
   assert(m > 0);
   assert(n > 0);
 
@@ -30,7 +30,7 @@ zfull_c *zfull_c_create(int m, int n) {
   }
 
   A->v_vector = A->v[0];
-  
+
   return A;
 }
 
@@ -68,7 +68,7 @@ void zfull_c_export(const char *filename, const zfull_c *A) {
   elem *e_ptr;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(A);
 
@@ -100,7 +100,7 @@ void zfull_c_export(const char *filename, const zfull_c *A) {
     assert(r == 1);
     e_ptr += 2;
   }
-  
+
   fclose(fid);
 }
 

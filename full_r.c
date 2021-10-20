@@ -4,14 +4,14 @@
 #include <assert.h>
 
 #include "full_r.h"
-#include "blas.h"
+#include "eblas.h"
 #include "util.h"
 
 
 full_r *full_r_create(int m, int n) {
   full_r *A;
   int i;
-  
+
   A = malloc(sizeof(full_r));
   assert(A);
 
@@ -28,7 +28,7 @@ full_r *full_r_create(int m, int n) {
   }
 
   A->v_vector = A->v[0];
-  
+
   return A;
 }
 
@@ -37,18 +37,18 @@ void full_r_destroy(full_r **A) {
   assert(*A);
   assert((*A)->v);
   assert((*A)->v[0]);
-  
+
   free((*A)->v[0]);
   free((*A)->v);
   free(*A);
-  
+
   *A = NULL;
 }
 
 
 void full_r_r_foreach(const full_r *A, int i, void (*func)(elem)) {
   int j;
-  
+
   assert(A);
   assert(func);
   assert(i >= 0 && i < A->m);
@@ -77,7 +77,7 @@ void full_r_fprintf(FILE *fid, const full_r *A) {
 void full_r_rows_fprintf(FILE *fid, const full_r *A,
 			 const int i1, const int i2) {
   int i, j;
-  
+
   assert(fid);
   assert(A);
   assert(i1 >= 0);
@@ -97,12 +97,12 @@ void full_r_submatrix_fprintf(FILE *fid, const full_r *A,
 			      const int M, const int N) {
   int i;
   int j;
-  
+
   assert(fid);
   assert(A);
   assert(M <= A->m);
   assert(N <= A->n);
-  
+
   for (i = 0; i < M; i++) {
     for (j = 0; j < N; j++) {
       fprintf_elem_s(fid, A->v[i][j]);
@@ -150,7 +150,7 @@ full_r *full_r_import(const char *filename) {
   fread_n = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(fread_n == 1);
   assert(sizeof_elem = sizeof(elem));
-  
+
   fread_n = 0;
   fread_n += fread(&m, sizeof(int), 1, fid);
   fread_n += fread(&n, sizeof(int), 1, fid);
@@ -174,7 +174,7 @@ void full_r_export(const char *filename, const full_r *A) {
   int sizeof_elem;
   FILE *fid;
   size_t fwrite_n;
-  
+
   assert(A);
   assert(filename);
 
@@ -184,7 +184,7 @@ void full_r_export(const char *filename, const full_r *A) {
   sizeof_elem = sizeof(elem);
   fwrite_n = fwrite(&sizeof_elem, sizeof(int), 1, fid);
   assert(fwrite_n == 1);
-    
+
   fwrite_n = fwrite(&(A->m), sizeof(int), 1, fid);
   fwrite_n += fwrite(&(A->n), sizeof(int), 1, fid);
   assert(fwrite_n == 2);
@@ -193,7 +193,7 @@ void full_r_export(const char *filename, const full_r *A) {
     for (j = 0; j < A->n; j++) {
       elem *v;
       v = &(A->v[i][j]);
-     
+
       fwrite_n = fwrite(v, sizeof(elem), 1, fid);
       assert(fwrite_n == 1);
     }
@@ -218,7 +218,7 @@ void full_r_set0(full_r *A) {
 
 void full_r_setI(full_r *A) {
   int i;
-  
+
   assert(A);
 
   full_r_set0(A);
@@ -235,7 +235,7 @@ void full_r_copy(full_r *Y, const full_r *X) {
 
   assert(Y->m == X->m);
   assert(Y->n == X->n);
-  
+
   ecopy(X->m * X->n, X->v[0], 1, Y->v[0], 1);
 }
 
@@ -258,7 +258,7 @@ void full_r_scal(full_r *A, const elem alpha) {
 int full_r_nnz(const full_r *A) {
   int i;
   int nnz;
-  
+
   assert(A);
 
   nnz = 0;

@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
   c_filter_new_set_imag0(A);
 
   for (i = 0; i < A->N; i++) {
-#ifdef OSX
+#ifdef OSX_BLAH
     A->h[i][0] = cos(i+1);
 #else
     A->h[i] = cos(i+1);

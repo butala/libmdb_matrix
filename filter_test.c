@@ -29,7 +29,7 @@ int main(void) {
   h_r = r_filter_create(N);
 
   for (i = 0; i < N; i++) {
-#ifdef OSX
+#ifdef OSX_BLAH
     h_c->h[i][0] = N - i;
 #else
     h_c->h[i] = N - i;
@@ -40,7 +40,7 @@ int main(void) {
   c_filter_set_imag0(h_c);
 
   for (i = 0; i < x_rs1->n; i++) {
-#ifdef OSX
+#ifdef OSX_BLAH
     x_rs1->h[i][0] = i;
 #else
     x_rs1->h[i] = i;
@@ -49,7 +49,7 @@ int main(void) {
   c_filter_set_imag0(x_rs1);
 
   for (i = 0; i < x_rs2->n; i++) {
-#ifdef OSX
+#ifdef OSX_BLAH
     x_rs2->h[i][0] = i;
 #else
     x_rs2->h[i] = i;

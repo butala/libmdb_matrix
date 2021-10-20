@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "sparse_rcs.h"
-#include "blas.h"
+#include "eblas.h"
 #include "util.h"
 
 
@@ -16,7 +16,7 @@ sparse_rcs *sparse_rcs_create(int m, int n, int N) {
   assert(m >= 0);
   assert(n >= 0);
   assert(N >= 0);
-  
+
   A = malloc(sizeof(sparse_rcs));
   assert(A);
 
@@ -31,7 +31,7 @@ sparse_rcs *sparse_rcs_create(int m, int n, int N) {
   else {
     A->r = NULL;
   }
-  
+
   if (N == 0) {
     A->v = NULL;
     A->j = NULL;
@@ -39,11 +39,11 @@ sparse_rcs *sparse_rcs_create(int m, int n, int N) {
   else {
     A->v = malloc(sizeof(elem) * N);
     assert(A->v);
-    
+
     A->j = malloc(sizeof(elem) * N);
     assert(A->j);
   }
-  
+
   return A;
 }
 
@@ -51,7 +51,7 @@ sparse_rcs *sparse_rcs_create(int m, int n, int N) {
 sparse_rcs *sparse_rcs_create_diag(int m, int n, elem d) {
   sparse_rcs *A;
   int i;
-    
+
   assert(m > 0);
   assert(n > 0);
 
@@ -63,7 +63,7 @@ sparse_rcs *sparse_rcs_create_diag(int m, int n, elem d) {
     A->r[i] = i;
   }
   A->r[m] = A->N;
-  
+
   return A;
 }
 
@@ -88,7 +88,7 @@ void sparse_rcs_destroy(sparse_rcs **A) {
   else {
     assert((*A)->r == NULL);
   }
-  
+
   free(*A);
 
   *A = NULL;
@@ -96,7 +96,7 @@ void sparse_rcs_destroy(sparse_rcs **A) {
 
 void sparse_rcs_check(const sparse_rcs *A) {
   int i;
-  
+
   assert(A);
   assert(A->m >= 0);
   assert(A->n >= 0);
@@ -109,7 +109,7 @@ void sparse_rcs_check(const sparse_rcs *A) {
   if (A->m > 0) {
     assert(A->N == A->r[A->m]);
   }
-  
+
   for (i = 0; i < A->N; i++) {
     assert(A->j[i] >= 0 && A->j[i] < A->n);
   }
@@ -125,16 +125,16 @@ sparse_rcs *sparse_rcs_import(const char *filename) {
   int sizeof_elem;
   int m, n, N;
   int r;
-  
+
   assert(filename);
-  
+
   fid = fopen(filename, "r");
   assert(fid);
 
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&m, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -165,7 +165,7 @@ sparse_rcs *sparse_rcs_import(const char *filename) {
 #ifndef NDEBUG
   sparse_rcs_check(A);
 #endif
-  
+
   return A;
 }
 
@@ -175,7 +175,7 @@ sparse_rcs *sparse_rcs_import3(const char *v_filename, const char *j_filename,
   int m, n, N;
   FILE *fid;
   int r;
-  
+
   assert(v_filename);
   assert(j_filename);
   assert(r_filename);
@@ -196,7 +196,7 @@ sparse_rcs *sparse_rcs_import3(const char *v_filename, const char *j_filename,
   assert(r == 1);
 
   A = sparse_rcs_create(m, n, N);
-	 
+
   rewind(fid);
   r = fread(A->r, sizeof(int), m+1, fid);
   assert(r == m+1);
@@ -219,7 +219,7 @@ sparse_rcs *sparse_rcs_import3(const char *v_filename, const char *j_filename,
 #ifdef NDEBUG
   sparse_rcs_check(A);
 #endif
-  
+
   return A;
 }
 
@@ -227,10 +227,10 @@ void sparse_rcs_export(const char *filename, const sparse_rcs *A) {
   FILE *fid;
   int count;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(A);
-  
+
   fid = fopen(filename, "w");
   assert(fid);
 
@@ -242,7 +242,7 @@ void sparse_rcs_export(const char *filename, const sparse_rcs *A) {
   count += fwrite(&(A->n), sizeof(int), 1, fid);
   count += fwrite(&(A->N), sizeof(int), 1, fid);
   assert(count == 3);
-  
+
   count = fwrite(A->v, sizeof(elem), A->N, fid);
   count += fwrite(A->j, sizeof(int), A->N, fid);
   count += fwrite(A->r, sizeof(int), A->m + 1, fid);
@@ -256,7 +256,7 @@ void sparse_rcs_export3(const char *v_filename, const char *j_filename,
 			const char *r_filename, const sparse_rcs *A) {
   FILE *fid;
   int r;
-  
+
   assert(v_filename);
   assert(j_filename);
   assert(r_filename);
@@ -274,7 +274,7 @@ void sparse_rcs_export3(const char *v_filename, const char *j_filename,
   r = fwrite(&A->n, sizeof(int), 1, fid);
   assert(r == 1);
   fclose(fid);
-  
+
   fid = fopen(v_filename, "w");
   assert(fid);
 
@@ -294,7 +294,7 @@ void sparse_rcs_export3(const char *v_filename, const char *j_filename,
 void sparse_rcs_fprintf(FILE *fid, const sparse_rcs *A) {
   int i, j, A_index, n_elem;
 
-  
+
   for (i = 0; i < A->m; i++) {
     n_elem = A->r[i+1] - A->r[i];
 
@@ -323,7 +323,7 @@ void sparse_rcs_fprintf(FILE *fid, const sparse_rcs *A) {
 
 void sparse_rcs_row_fprintf(FILE *fid, const sparse_rcs *A, int row) {
   int n_elem, j, row_index, row_count;
-  
+
   assert(A);
   assert(row >= 0 && row < A->m);
 
@@ -355,7 +355,7 @@ void sparse_rcs_row_fprintf(FILE *fid, const sparse_rcs *A, int row) {
 void sparse_rcs_rows_fprintf(FILE *fid, const sparse_rcs *A,
 			     int row1, int row2)  {
   int i;
-  
+
   assert(fid);
   assert(A);
   assert(row1 >= 0 && row1 <= row2);
@@ -380,7 +380,7 @@ void sparse_rcs_rows_printf(const sparse_rcs *A, int row1, int row2) {
 
 void sparse_rcs_r_foreach(const sparse_rcs *A, int i, void (*func)(elem)) {
   int start, stop, k;
-  
+
   assert(A);
   assert(func);
   assert(i >= 0 && i < A->m);
@@ -402,7 +402,7 @@ void sparse_rcs_debug_fprintf(FILE *fid, const sparse_rcs *A) {
 
   assert(fid);
   assert(A);
-	      
+
   fprintf(fid, "N=%d\n", A->N);
   fprintf(fid, "m=%d\tn=%d\n", A->m, A->n);
 
@@ -430,7 +430,7 @@ void sparse_rcs_debug_fprintf(FILE *fid, const sparse_rcs *A) {
 void sparse_rcs_mvm(const sparse_rcs *A, const vector *x, vector *y) {
   int i, l;
   int n_elem;
-  
+
   assert(A);
   assert(x);
   assert(y);
@@ -439,10 +439,10 @@ void sparse_rcs_mvm(const sparse_rcs *A, const vector *x, vector *y) {
   assert(A->m == y->n);
 
   vector_set0(y);
-  
+
   for (i = 0; i < A->m; i++) {
     n_elem = A->r[i+1] - A->r[i];
-    
+
     for (l = 0; l < n_elem; l++) {
       y->v[i] += A->v[A->r[i] + l] * x->v[A->j[A->r[i] + l]];
     }
@@ -454,7 +454,7 @@ void sparse_rcs_mvm(const sparse_rcs *A, const vector *x, vector *y) {
 void sparse_rcs_mvm_add2col(const sparse_rcs *A, const vector *x,
 			    full_r *Y, int j) {
   int i, n_elem, l;
-  
+
   assert(A);
   assert(x);
   assert(Y);
@@ -465,7 +465,7 @@ void sparse_rcs_mvm_add2col(const sparse_rcs *A, const vector *x,
 
   for (i = 0; i < A->m; i++) {
     n_elem = A->r[i+1] - A->r[i];
-    
+
     for (l = 0; l < n_elem; l++) {
       Y->v[i][j] += A->v[A->r[i] + l] * x->v[A->j[A->r[i] + l]];
     }
@@ -477,10 +477,10 @@ void sparse_rcs_mvm_add2col(const sparse_rcs *A, const vector *x,
 void sparse_rcs_mvm_blas(const sparse_rcs *A, const vector *x, vector *y) {
   int i, l;
   int n_elem;
-  
+
   vector *row;
   vector *x_portion;
-  
+
   assert(A);
   assert(x);
   assert(y);
@@ -501,7 +501,7 @@ void sparse_rcs_mvm_blas(const sparse_rcs *A, const vector *x, vector *y) {
 
     edot(n_elem, row->v, 1, x_portion->v, 1);
   }
-  
+
   vector_destroy(&row);
   vector_destroy(&x_portion);
 }
@@ -512,7 +512,7 @@ void sparse_rcs_mvm_blas(const sparse_rcs *A, const vector *x, vector *y) {
 void sparse_rcs_mmm(const sparse_rcs *A, const sparse_rcs *B_T, full_r *C) {
   int i, j;
   int index_A, index_B_T;
-  
+
   assert(A);
   assert(B_T);
   assert(C);
@@ -521,11 +521,11 @@ void sparse_rcs_mmm(const sparse_rcs *A, const sparse_rcs *B_T, full_r *C) {
   assert(A->n == B_T->n);
 
   full_r_set0(C);
-  
+
   for (i = 0; i < C->m; i++) {
     for (j = 0; j < C->n; j++) {
       index_A = A->r[i];
-      
+
       for (index_B_T = B_T->r[j]; index_B_T < B_T->r[j+1]; index_B_T++) {
 	while (A->j[index_A] < B_T->j[index_B_T]) {
 	  index_A++;
@@ -538,7 +538,7 @@ void sparse_rcs_mmm(const sparse_rcs *A, const sparse_rcs *B_T, full_r *C) {
 	if (index_A >= A->r[i+1]) {
 	  break;
 	}
-	
+
 	if (A->j[index_A] == B_T->j[index_B_T]) {
 	  C->v[i][j] += A->v[index_A] * B_T->v[index_B_T];
 	}
@@ -558,25 +558,25 @@ sparse_rcs *sparse_rcs_transpose(const sparse_rcs *A) {
     int i;
   } elem_int_pair;
   elem_int_pair **elem_int_pair_list;
-  
+
   assert(A);
 
 
   col_count = ivector_create(A->n);
   ivector_set0(col_count);
-  
+
   for (i = 0; i < A->N; i++) {
     col_count->v[A->j[i]]++;
   }
 
   elem_int_pair_list = malloc(A->n * sizeof(elem_int_pair *));
   assert(elem_int_pair_list);
-  
+
   for (i = 0; i < A->n; i++) {
     elem_int_pair_list[i] = malloc(col_count->v[i] * sizeof(elem_int_pair));
     assert(elem_int_pair_list[i]);
   }
-  
+
   ivector_set0(col_count);
 
   for (i = 0; i < A->m; i++) {
@@ -586,7 +586,7 @@ sparse_rcs *sparse_rcs_transpose(const sparse_rcs *A) {
       col_count->v[A->j[j]]++;
     }
   }
-  
+
   B = sparse_rcs_create(A->n, A->m, A->N);
 
   index = 0;
@@ -600,9 +600,9 @@ sparse_rcs *sparse_rcs_transpose(const sparse_rcs *A) {
   }
   B->r[B->m] = index;
 
-  
+
   ivector_destroy(&col_count);
-  
+
   for (i = 0; i < A->n; i++) {
     free(elem_int_pair_list[i]);
   }
@@ -628,30 +628,30 @@ sparse_binary_rcs *sparse_binary_rcs_import(const char *filename) {
   int count;
 
   assert(filename);
-  
+
   fid = fopen(filename, "r");
   assert(fid);
 
   A = malloc(sizeof(sparse_binary_rcs));
   assert(A);
-  
+
   count = fread(&(A->m), sizeof(int), 1, fid);
   count += fread(&(A->n), sizeof(int), 1, fid);
   count += fread(&(A->N), sizeof(int), 1, fid);
   assert(count == 3);
-  
+
   A->j = malloc(sizeof(int) * A->N);
   A->r = malloc(sizeof(int) * (A->m + 1));
 
   assert(A->j && A->r);
-  
+
   count = fread(A->j, sizeof(int), A->N, fid);
   count += fread(A->r, sizeof(int), A->m + 1, fid);
 
   assert(count == A->N + A->m + 1);
 
   fclose(fid);
-  
+
   return A;
 }
 
@@ -660,22 +660,22 @@ void sparse_binary_rcs_export(const char *filename,
   FILE *fid;
   int count;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(A);
-  
+
   fid = fopen(filename, "w");
   assert(fid);
 
   sizeof_elem = sizeof(elem);
   count = fwrite(&sizeof_elem, sizeof(int), 1, fid);
   assert(count == 1);
-  
+
   count = fwrite(&(A->m), sizeof(int), 1, fid);
   count += fwrite(&(A->n), sizeof(int), 1, fid);
   count += fwrite(&(A->N), sizeof(int), 1, fid);
   assert(count == 3);
-  
+
   count = fwrite(A->j, sizeof(int), A->N, fid);
   count += fwrite(A->r, sizeof(int), A->m + 1, fid);
 
@@ -693,13 +693,13 @@ sparse_binary_rcs *sparse_binary_rcs_create(int m, int n) {
   A->N = 0;
   A->j = NULL;
   A->r = NULL;
-  
+
   return A;
 }
 
 void sparse_binary_rcs_destroy(sparse_binary_rcs **A) {
   assert(*A);
-  
+
   free((*A)->j);
   free((*A)->r);
   free(*A);
@@ -711,7 +711,7 @@ void sparse_binary_rcs_printf(const sparse_binary_rcs *A) {
   int i, j, A_index;
 
   A_index = 0;
-  
+
   for (i = 0; i < A->m; i++) {
     int n_r = A->r[i+1] - A->r[i];
 

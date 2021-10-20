@@ -4,7 +4,7 @@
 #ifdef ATLAS
 #include <cblas.h>
 #elif defined OPENBLAS
-#include <cblas-openblas.h>
+#include <cblas.h>
 #elif defined VECLIB
 //#include <cblas.h>
 #else
@@ -14,7 +14,7 @@
 
 #include "full_c.h"
 #include "util.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 #ifndef NDEBUG

@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "psf.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 /********
@@ -13,7 +13,7 @@
 
 c_psf *c_psf_create(int ny, int nx) {
   c_psf *p;
-  
+
   assert(nx > 0);
   assert(ny > 0);
 
@@ -36,9 +36,9 @@ c_psf *c_psf_create(int ny, int nx) {
      define size of the first (# of rows in 2D - or the dimension
      whose index changes most slowly when cycling through p->h) and
      second (# of columns) dimensions of the psf, respectively.
-     
+
    */
-  
+
   p->forward_plan = fftwe_plan_dft_2d(ny, nx, p->h, p->h,
 				      FFTW_FORWARD, FFTW_ESTIMATE);
 
@@ -80,7 +80,7 @@ void c_psf_idft(c_psf *p) {
 void c_psf_printf(c_psf *p) {
   int i, j;
   fftwe_complex *c_index;
-  
+
   assert(p);
 
   c_index = p->h;
@@ -120,7 +120,7 @@ void c_psf_set0(c_psf *p) {
 
 r_psf *r_psf_create(int ny, int nx) {
   r_psf *p;
-  
+
   assert(nx > 0);
   assert(ny > 0);
 
@@ -144,10 +144,10 @@ r_psf *r_psf_create(int ny, int nx) {
 
   p->forward_plan = fftwe_plan_dft_r2c_2d(ny, nx, p->h, (fftwe_complex *) p->h,
 					  FFTW_ESTIMATE);
-  
+
   p->backward_plan = fftwe_plan_dft_c2r_2d(ny, nx, (fftwe_complex *) p->h, p->h,
 					   FFTW_ESTIMATE);
-  
+
   return p;
 }
 
@@ -163,7 +163,7 @@ void r_psf_destroy(r_psf **p) {
   free(*p);
   *p = NULL;
 }
-  
+
 void r_psf_dft(r_psf *p) {
   assert(p);
 
@@ -177,7 +177,7 @@ void r_psf_idft(r_psf *p) {
 
   fftwe_execute(p->backward_plan);
   escal(p->N_phy, ((elem) 1)/p->N_log, p->h, 1);
-    
+
   p->d = fftwe_domain_flip(p->d);
 }
 
@@ -185,7 +185,7 @@ void r_psf_printf(r_psf *p) {
   int i, j;
   elem *e_ptr;
   z_elem *c_e_ptr;
-  
+
   assert(p);
 
   if (p->d == S) {
@@ -217,7 +217,7 @@ void r_psf_printf(r_psf *p) {
 void r_psf_printf_dft(r_psf *p) {
   int i, j;
   z_elem H_ky_kx;
-  
+
   assert(p);
   assert(p->d == F);
 
@@ -232,7 +232,7 @@ void r_psf_printf_dft(r_psf *p) {
 
 void r_psf_set0(r_psf *p) {
   assert(p);
-  
+
   set0(p->h, p->N_phy);
 }
 
@@ -241,7 +241,7 @@ void r_psf_dft_get(const r_psf *p, int ky, int kx, z_elem *H_ky_kx) {
   int nx_log_half;
   int nx_phy_half;
   int row, col, index;
-    
+
   assert(p);
   assert(H_ky_kx);
   assert(ky >= 0 && ky < p->ny_log);
@@ -251,7 +251,7 @@ void r_psf_dft_get(const r_psf *p, int ky, int kx, z_elem *H_ky_kx) {
 
   nx_log_half = floor(p->nx_log/2);
   nx_phy_half = floor(p->nx_phy/2);
-  
+
   if (kx <= nx_log_half) {
     col = kx;
     row = ky;
@@ -263,9 +263,9 @@ void r_psf_dft_get(const r_psf *p, int ky, int kx, z_elem *H_ky_kx) {
 
   index = 2*(row*nx_phy_half + col);
   assert(index >= 0 && index < p->N_phy - 1);
-  
+
   X_k = (z_elem *) &(p->h[index]);
-  
+
   (*H_ky_kx)[0] = (*X_k)[0];
 
   if (kx <= nx_log_half) {
@@ -278,14 +278,14 @@ void r_psf_dft_get(const r_psf *p, int ky, int kx, z_elem *H_ky_kx) {
 
 void r_psf_execute_r(const r_psf *p_h, r_psf *p_x) {
   int i;
-  
+
   assert(p_h);
   assert(p_x);
   assert(p_h->nx_log == p_x->nx_log);
   assert(p_h->ny_log == p_x->ny_log);
   assert(p_h->d == F);
   assert(p_x->d == F);
-  
+
 
   for (i = 0; i < p_h->N_phy; i += 2) {
     zmul((z_elem *) &(p_x->h[i]), (const z_elem *) &(p_h->h[i]));
@@ -301,21 +301,21 @@ void r_psf_execute_r(const r_psf *p_h, r_psf *p_x) {
 
 rs22_psf *rs22_psf_create(int ny_phy, int nx_phy) {
   rs22_psf *p;
-  
+
   assert(ny_phy > 0);
   assert(nx_phy > 0);
-  
+
   p = malloc(sizeof(rs22_psf));
   assert(p);
 
   p->ny_phy = ny_phy;
   p->nx_phy = nx_phy;
   p->N_phy = ny_phy * nx_phy;
-  
+
   p->ny_log = 2*ny_phy;
   p->nx_log = 2*nx_phy;
   p->N_log = 4 * ny_phy * nx_phy;
-  
+
   p->h = fftwe_malloc(sizeof(elem) * ny_phy * nx_phy);
   assert(p->h);
 
@@ -328,7 +328,7 @@ rs22_psf *rs22_psf_create(int ny_phy, int nx_phy) {
   p->backward_plan = fftwe_plan_r2r_2d(ny_phy, nx_phy, p->h, p->h,
 				       FFTW_REDFT01, FFTW_REDFT01,
 				       FFTW_ESTIMATE);
-  
+
   return p;
 }
 
@@ -355,17 +355,17 @@ void rs22_psf_dft(rs22_psf *p) {
 void rs22_psf_idft(rs22_psf *p) {
   assert(p);
   assert(p->d == F);
-  
+
   fftwe_execute(p->backward_plan);
   escal(p->N_phy, ((elem) 1) / p->N_log, p->h, 1);
-  
+
   p->d = fftwe_domain_flip(p->d);
 }
 
 void rs22_psf_printf(rs22_psf *p) {
   int i, j;
   elem *e_ptr;
-  
+
   assert(p);
 
   e_ptr = p->h;
@@ -399,7 +399,7 @@ void rs22_psf_dft_get(const rs22_psf *p, int ky, int kx,
   z_elem z;
   elem theta;
   int row, index;
-  
+
   assert(p);
   assert(H_ky_kx);
   assert(ky >= 0 && ky < p->ny_log);
@@ -435,7 +435,7 @@ void rs22_psf_dft_get(const rs22_psf *p, int ky, int kx,
 
   if (kx == 0) {
     index = row * p->nx_phy;
-    
+
     (*H_ky_kx)[0] *= p->h[index];
     (*H_ky_kx)[1] *= p->h[index];
   }
@@ -446,7 +446,7 @@ void rs22_psf_dft_get(const rs22_psf *p, int ky, int kx,
     zmul(H_ky_kx, (const z_elem *) &z);
 
     index = row * p->nx_phy + kx;
-    
+
     (*H_ky_kx)[0] *= p->h[index];
     (*H_ky_kx)[1] *= p->h[index];
   }
@@ -455,17 +455,17 @@ void rs22_psf_dft_get(const rs22_psf *p, int ky, int kx,
     (*H_ky_kx)[1] = 0;
 
     index = row * p->nx_phy + kx;
-    
+
     return;
   }
   else {
     theta = M_PI * kx / (2 * p->nx_phy);
     expj(theta, &z);
-    
+
     zmul(H_ky_kx, (const z_elem *) &z);
-    
+
     index = row * p->nx_phy + 2 * p->nx_phy - kx;
-    
+
     (*H_ky_kx)[0] *= -p->h[index];
     (*H_ky_kx)[1] *= -p->h[index];
   }
@@ -477,7 +477,7 @@ rs22_psf *rs22_psf_import(char *filename) {
   int ny_phy, nx_phy;
   rs22_psf *p;
   int r;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -486,7 +486,7 @@ rs22_psf *rs22_psf_import(char *filename) {
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&ny_phy, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -497,7 +497,7 @@ rs22_psf *rs22_psf_import(char *filename) {
 
   r = fread(p->h, sizeof(elem), p->N_phy, fid);
   assert(r == p->N_phy);
-  
+
   fclose(fid);
 
   return p;
@@ -511,41 +511,41 @@ rs22_psf *rs22_psf_import_zp(const char *filename, int ny_phy, int nx_phy,
   rs22_psf *p;
   int i, index;
   int r;
-  
+
   assert(filename);
   assert(ny_phy > 0);
   assert(nx_phy > 0);
   assert(ny_phy_zp > 0 && ny_phy_zp >= ny_phy);
   assert(nx_phy_zp > 0 && nx_phy_zp >= nx_phy);
-  
+
   fid = fopen(filename, "r");
   assert(fid);
 
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&ny_phy_fread, sizeof(int), 1, fid);
   assert(r == 1);
 
   r = fread(&nx_phy_fread, sizeof(int), 1, fid);
   assert(r == 1);
-  
+
   assert(ny_phy_fread == ny_phy);
   assert(nx_phy_fread == nx_phy);
-  
+
   p = rs22_psf_create(ny_phy_zp, nx_phy_zp);
 
   set0(p->h, p->N_phy);
-  
+
   index = 0;
   for (i = 0; i < ny_phy; i++) {
     r = fread(&(p->h[index]), sizeof(elem), nx_phy, fid);
     assert(r == nx_phy);
-    
+
     index += nx_phy_zp;
   }
-  
+
   fclose(fid);
 
   return p;
@@ -556,7 +556,7 @@ void rs22_psf_export(const char *filename, rs22_psf *p) {
   FILE *fid;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(p);
 
@@ -567,7 +567,7 @@ void rs22_psf_export(const char *filename, rs22_psf *p) {
   sizeof_elem = sizeof(elem);
   r = fwrite(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
-  
+
   r = fwrite(&p->ny_phy, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -576,7 +576,7 @@ void rs22_psf_export(const char *filename, rs22_psf *p) {
 
   r = fwrite(p->h, sizeof(elem), p->N_phy, fid);
   assert(r == p->N_phy);
-  
+
   fclose(fid);
 }
 

@@ -3,7 +3,7 @@
 #include <assert.h>
 
 #include "filter_new.h"
-#include "blas.h"
+#include "eblas.h"
 #include "vector.h"
 
 
@@ -21,7 +21,7 @@ static fftwe_complex *c_filter_new_printf_r(c_filter_new *v, fftwe_complex *h,
 c_filter_new *c_filter_new_create(int rank, const int *n) {
   c_filter_new *v;
   int i;
-  
+
   assert(rank > 0);
 
   v = malloc(sizeof(c_filter_new));
@@ -29,7 +29,7 @@ c_filter_new *c_filter_new_create(int rank, const int *n) {
 
   v->rank = rank;
   v->n = n;
-  
+
   v->N = 1;
   for (i = 0; i < rank; i++) {
     v->N *= n[i];
@@ -45,20 +45,20 @@ c_filter_new *c_filter_new_create(int rank, const int *n) {
 
   v->backward_plan = fftwe_plan_dft(rank, n, v->h, v->h,
 				    FFTW_BACKWARD, FFTW_ESTIMATE);
-  
+
   return v;
 }
 
 void c_filter_new_destroy(c_filter_new **v) {
   assert(v);
   assert(*v);
-  
+
   fftwe_free((*v)->h);
   fftwe_destroy_plan((*v)->forward_plan);
   fftwe_destroy_plan((*v)->backward_plan);
   free((void *) (*v)->n);
   free(*v);
-  
+
   *v = NULL;
 }
 
@@ -80,7 +80,7 @@ void c_filter_new_idft(c_filter_new *v) {
 
 void c_filter_new_printf(c_filter_new *v) {
   ivector *count;
-  
+
   assert(v);
 
   if (v->rank > 1) {
@@ -90,7 +90,7 @@ void c_filter_new_printf(c_filter_new *v) {
   else {
     count = NULL;
   }
-  
+
   c_filter_new_printf_r(v, v->h, 0, count);
 
   if (v->rank > 1) {
@@ -104,7 +104,7 @@ void c_filter_new_printf(c_filter_new *v) {
 static fftwe_complex *c_filter_new_printf_r(c_filter_new *v, fftwe_complex *h,
 					    int depth, ivector *count) {
   int i;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
@@ -113,7 +113,7 @@ static fftwe_complex *c_filter_new_printf_r(c_filter_new *v, fftwe_complex *h,
   }
   assert(h);
 
-  
+
   if(depth == v->rank - 1) {
     c_fprintf_row(stdout, h, v->n[v->rank - 1]);
     h += v->n[v->rank - 1];
@@ -126,7 +126,7 @@ static fftwe_complex *c_filter_new_printf_r(c_filter_new *v, fftwe_complex *h,
       }
       printf(":, :)\n");
     }
-    
+
     for(i = 0; i < v->n[depth]; i++) {
       h = c_filter_new_printf_r(v, h, depth+1, count);
       count->v[depth]++;
@@ -143,7 +143,7 @@ static fftwe_complex *c_filter_new_printf_r(c_filter_new *v, fftwe_complex *h,
 
 static void c_fprintf_row(FILE *fid, fftwe_complex *h, int c) {
   int i;
-  
+
   assert(h);
   assert(c > 0);
 
@@ -157,7 +157,7 @@ static void c_fprintf_row(FILE *fid, fftwe_complex *h, int c) {
   }
   fprintf(fid, "\n");
 }
-  
+
 void c_filter_new_set_real0(c_filter_new *v) {
   assert(v);
 
@@ -192,7 +192,7 @@ static void r_fprintf_row(FILE *fid, elem *h, int c);
 
 static elem *r_filter_new_fprintf_dft_r(FILE *fid, r_filter_new *v, elem *h,
 					int depth, ivector *count);
-  
+
 static int r_filter_row_major_idx(int rank, const int *i, const int *n_log);
 
 static elem *r_filter_new_import_r(r_filter_new *v, elem *h, FILE *fid,
@@ -207,7 +207,7 @@ r_filter_new *r_filter_new_create(int rank, const int *n_log) {
   int i;
   int *N_log;
   int *N_phy;
-  
+
   assert(rank > 0);
 
   v = malloc(sizeof(r_filter_new));
@@ -216,7 +216,7 @@ r_filter_new *r_filter_new_create(int rank, const int *n_log) {
   v->rank = rank;
 
   v->n_log = n_log;
-  
+
   N_log = malloc(rank * sizeof(int));
   assert(N_log);
 
@@ -235,7 +235,7 @@ r_filter_new *r_filter_new_create(int rank, const int *n_log) {
     N_phy[i] = n_log[i] * N_phy[i+1];
   }
   v->N_phy = N_phy;
-  
+
   v->h = fftwe_malloc(v->N_phy[0] * sizeof(fftwe_complex));
   assert(v->h);
 
@@ -246,7 +246,7 @@ r_filter_new *r_filter_new_create(int rank, const int *n_log) {
 
   v->backward_plan = fftwe_plan_dft_c2r(rank, n_log, (fftwe_complex *) v->h,
 				       v->h, FFTW_ESTIMATE);
-  
+
   return v;
 }
 
@@ -255,7 +255,7 @@ r_filter_new *r_filter_new_create_same_dim(const r_filter_new *A) {
   int rank;
   int *n_log;
   int i;
-  
+
   assert(A);
 
   rank = A->rank;
@@ -286,7 +286,7 @@ void r_filter_new_destroy(r_filter_new **v) {
   *v = NULL;
 }
 
-  
+
 void r_filter_new_dft(r_filter_new *v) {
   assert(v);
 
@@ -307,7 +307,7 @@ void r_filter_new_idft(r_filter_new *v) {
 
 void r_filter_new_set0(r_filter_new *v) {
   assert(v);
-  
+
   set0(v->h, v->N_phy[0]);
 }
 
@@ -319,7 +319,7 @@ void r_filter_new_printf(r_filter_new *v) {
 
 void r_filter_new_fprintf(FILE *fid, r_filter_new *v) {
   ivector *count;
-  
+
   assert(v);
 
   if (v->rank > 1) {
@@ -329,7 +329,7 @@ void r_filter_new_fprintf(FILE *fid, r_filter_new *v) {
   else {
     count = NULL;
   }
-  
+
   r_filter_new_fprintf_r(fid, v, v->h, 0, count);
 
   if (v->rank > 1) {
@@ -344,7 +344,7 @@ void r_filter_new_fprintf(FILE *fid, r_filter_new *v) {
 static elem *r_filter_new_fprintf_r(FILE *fid, r_filter_new *v, elem *h,
 				    int depth, ivector *count) {
   int i;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
@@ -353,7 +353,7 @@ static elem *r_filter_new_fprintf_r(FILE *fid, r_filter_new *v, elem *h,
   }
   assert(h);
 
-  
+
   if (depth == v->rank - 1) {
     if (v->d == S) {
       r_fprintf_row(fid, h, v->n_log[v->rank - 1]);
@@ -376,7 +376,7 @@ static elem *r_filter_new_fprintf_r(FILE *fid, r_filter_new *v, elem *h,
       }
       fprintf(fid, ":, :)\n");
     }
-    
+
     for(i = 0; i < v->n_log[depth]; i++) {
       h = r_filter_new_fprintf_r(fid, v, h, depth+1, count);
       count->v[depth]++;
@@ -394,7 +394,7 @@ static elem *r_filter_new_fprintf_r(FILE *fid, r_filter_new *v, elem *h,
 
 static void r_fprintf_row(FILE *fid, elem *h, int c) {
   int i;
-  
+
   assert(h);
   assert(c > 0);
 
@@ -414,13 +414,13 @@ void r_filter_new_printf_dft(r_filter_new *v) {
   r_filter_new_fprintf_dft(stdout, v);
 }
 
-  
+
 void r_filter_new_fprintf_dft(FILE *fid, r_filter_new *v) {
  ivector *count;
-  
+
  assert(v);
  assert(v->d == F);
- 
+
  if (v->rank > 1) {
    count = ivector_create(v->rank - 1);
    ivector_set0(count);
@@ -428,9 +428,9 @@ void r_filter_new_fprintf_dft(FILE *fid, r_filter_new *v) {
  else {
    count = NULL;
  }
- 
+
  r_filter_new_fprintf_dft_r(fid, v, v->h, 0, count);
- 
+
  if (v->rank > 1) {
    ivector_destroy(&count);
  }
@@ -438,7 +438,7 @@ void r_filter_new_fprintf_dft(FILE *fid, r_filter_new *v) {
    assert(count == NULL);
  }
 }
- 
+
 
 static elem *r_filter_new_fprintf_dft_r(FILE *fid, r_filter_new *v, elem *h,
 					int depth, ivector *count) {
@@ -446,7 +446,7 @@ static elem *r_filter_new_fprintf_dft_r(FILE *fid, r_filter_new *v, elem *h,
   int *k_idx;
   z_elem h_conj;
   z_elem *h_ptr;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
@@ -454,8 +454,8 @@ static elem *r_filter_new_fprintf_dft_r(FILE *fid, r_filter_new *v, elem *h,
     assert(count);
   }
   assert(h);
-  
-  
+
+
   if (depth == v->rank - 1) {
     k_half = floor(v->n_log[v->rank-1]/2);
 
@@ -470,12 +470,12 @@ static elem *r_filter_new_fprintf_dft_r(FILE *fid, r_filter_new *v, elem *h,
     for (i = 0; i < v->rank - 1; i++) {
       k_idx[i] = (v->n_log[i] - count->v[i]) % v->n_log[i];
     }
-    
+
     for (k = k_half + 1; k < v->n_log[v->rank - 1]; k++) {
       k_idx[v->rank - 1] = (v->n_log[v->rank - 1] - k) % v->n_log[v->rank - 1];
 
       idx = r_filter_row_major_idx(v->rank, k_idx, v->n_log);
-      
+
       h_ptr = (z_elem *) v->h;
       h_ptr += idx;
       h_conj[0] = (*h_ptr)[0];
@@ -484,7 +484,7 @@ static elem *r_filter_new_fprintf_dft_r(FILE *fid, r_filter_new *v, elem *h,
     }
 
     free(k_idx);
-    
+
     fprintf(fid, "\n");
   }
   else {
@@ -513,11 +513,11 @@ static elem *r_filter_new_fprintf_dft_r(FILE *fid, r_filter_new *v, elem *h,
 
 static int r_filter_row_major_idx(int rank, const int *i, const int *n_log) {
   int j, idx;
-  
+
   assert(rank > 0);
   assert(i);
   assert(n_log);
-  
+
   idx = i[0];
   for (j = 1; j < rank; j++) {
     if (j == rank - 1) {
@@ -526,7 +526,7 @@ static int r_filter_row_major_idx(int rank, const int *i, const int *n_log) {
     else {
       idx *= n_log[j];
     }
-    
+
     idx += i[j];
   }
 
@@ -536,7 +536,7 @@ static int r_filter_row_major_idx(int rank, const int *i, const int *n_log) {
 
 void r_filter_new_execute_r(const r_filter_new *h, r_filter_new *x) {
   int i;
-  
+
   assert(h);
   assert(x);
   assert(h->d == F);
@@ -559,7 +559,7 @@ r_filter_new *r_filter_new_import(const char *filename) {
   int r;
   int sizeof_elem;
   r_filter_new *v;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -568,7 +568,7 @@ r_filter_new *r_filter_new_import(const char *filename) {
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&rank, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -582,7 +582,7 @@ r_filter_new *r_filter_new_import(const char *filename) {
   v = r_filter_new_create(rank, n_log);
 
   r_filter_new_import_r(v, v->h, fid, 0);
-  
+
   fclose(fid);
 
   return v;
@@ -593,14 +593,14 @@ static elem *r_filter_new_import_r(r_filter_new *v, elem *h, FILE *fid,
 				   int depth) {
   int i;
   int r;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
   assert(h);
   assert(fid);
 
-  
+
   if (depth == v->rank - 1) {
     r = fread(h, sizeof(elem), v->n_log[v->rank - 1], fid);
     h += 2*((int) (floor(v->n_log[v->rank - 1]/2) + 1));
@@ -619,7 +619,7 @@ void r_filter_new_export(const char *filename, const r_filter_new *v) {
   FILE *fid;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(v);
   assert(v->d == S);
@@ -630,7 +630,7 @@ void r_filter_new_export(const char *filename, const r_filter_new *v) {
   sizeof_elem = sizeof(elem);
   r = fwrite(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
-  
+
   r = fwrite(&v->rank, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -638,7 +638,7 @@ void r_filter_new_export(const char *filename, const r_filter_new *v) {
   assert(r == v->rank);
 
   r_filter_new_export_r(v, v->h, fid, 0);
-  
+
   fclose(fid);
 }
 
@@ -647,14 +647,14 @@ static elem *r_filter_new_export_r(const r_filter_new *v, elem *h, FILE *fid,
 				   int depth) {
   int i;
   int r;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
   assert(h);
   assert(fid);
 
-  
+
   if (depth == v->rank - 1) {
     r = fwrite(h, sizeof(elem), v->n_log[v->rank - 1], fid);
     h += 2*((int) (floor(v->n_log[v->rank - 1]/2) + 1));
@@ -674,12 +674,12 @@ elem *r_filter_new_get_ptr(const r_filter_new *v, const int *n) {
   elem *e_ptr;
   z_elem *ze_ptr;
   int rank;
-  
+
   assert(v);
   assert(n);
 
   rank = v->rank;
-  
+
   e_ptr = v->h;
   for (i = 0; i < v->rank - 1; i++) {
     assert(n[i] >= 0);
@@ -739,7 +739,7 @@ rs2_filter_new *rs2_filter_new_create(int rank, const int *n_phy) {
   rs2_filter_new *v;
   int i;
   fftw_r2r_kind *kind;
-    
+
   assert(rank > 0);
   assert(n_phy);
 
@@ -747,7 +747,7 @@ rs2_filter_new *rs2_filter_new_create(int rank, const int *n_phy) {
   assert(v);
 
   v->rank = rank;
-  
+
   v->n_phy = n_phy;
 
   v->N_phy = 1;
@@ -768,19 +768,19 @@ rs2_filter_new *rs2_filter_new_create(int rank, const int *n_phy) {
   for (i = 0; i < rank; i++) {
     kind[i] = FFTW_REDFT10;
   }
-  
+
   v->forward_plan = fftwe_plan_r2r(rank, n_phy, v->h, v->h, kind,
 				   FFTW_ESTIMATE);
-  
+
   for (i = 0; i < rank; i++) {
     kind[i] = FFTW_REDFT01;
   }
 
   v->backward_plan = fftwe_plan_r2r(rank, n_phy, v->h, v->h, kind,
 				    FFTW_ESTIMATE);
-  
+
   free(kind);
-  
+
   return v;
 }
 
@@ -806,7 +806,7 @@ rs2_filter_new *rs2_filter_new_import(char *filename) {
   int r;
   int sizeof_elem;
   rs2_filter_new *v;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -815,7 +815,7 @@ rs2_filter_new *rs2_filter_new_import(char *filename) {
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&rank, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -823,7 +823,7 @@ rs2_filter_new *rs2_filter_new_import(char *filename) {
 
   n_phy = malloc(rank * sizeof(int));
   assert(n_phy);
-  
+
   r = fread(n_phy, sizeof(int), rank, fid);
   assert(r == rank);
 
@@ -831,7 +831,7 @@ rs2_filter_new *rs2_filter_new_import(char *filename) {
 
   r = fread(v->h, sizeof(elem), v->N_phy, fid);
   assert(r == v->N_phy);
-  
+
   fclose(fid);
 
   return v;
@@ -857,7 +857,7 @@ void rs2_filter_new_export(char *filename, rs2_filter_new *v) {
 
   r = fwrite(v->h, sizeof(elem), v->N_phy, fid);
   assert(r == v->N_phy);
-  
+
   fclose(fid);
 }
 
@@ -889,7 +889,7 @@ void rs2_filter_new_idft(rs2_filter_new *v) {
 
 void rs2_filter_new_printf(rs2_filter_new *v) {
   ivector *count;
-  
+
   assert(v);
 
   if (v->rank > 1) {
@@ -899,7 +899,7 @@ void rs2_filter_new_printf(rs2_filter_new *v) {
   else {
     count = NULL;
   }
-  
+
   rs2_filter_new_printf_r(v, v->h, 0, count);
 
   if (v->rank > 1) {
@@ -913,7 +913,7 @@ void rs2_filter_new_printf(rs2_filter_new *v) {
 static elem *rs2_filter_new_printf_r(rs2_filter_new *v, elem *h, int depth,
 				     ivector *count) {
   int i;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
@@ -921,7 +921,7 @@ static elem *rs2_filter_new_printf_r(rs2_filter_new *v, elem *h, int depth,
     assert(count);
   }
   assert(h);
-  
+
 
   if(depth == v->rank - 1) {
     r_fprintf_row(stdout, h, v->n_phy[v->rank - 1]);
@@ -935,7 +935,7 @@ static elem *rs2_filter_new_printf_r(rs2_filter_new *v, elem *h, int depth,
       }
       printf(":, :)\n");
     }
-    
+
     for(i = 0; i < v->n_phy[depth]; i++) {
       h = rs2_filter_new_printf_r(v, h, depth+1, count);
       count->v[depth]++;
@@ -953,15 +953,15 @@ static elem *rs2_filter_new_printf_r(rs2_filter_new *v, elem *h, int depth,
 
 void rs2_filter_new_printf_dft(rs2_filter_new *v) {
   ivector *k;
-  
+
   assert(v);
   assert(v->d == F);
-  
+
   k = ivector_create(v->rank);
   ivector_set0(k);
-  
+
   rs2_filter_new_printf_dft_r(v, 0, k);
-  
+
   ivector_destroy(&k);
 }
 
@@ -970,13 +970,13 @@ static void rs2_filter_new_printf_dft_r(rs2_filter_new *v, int depth,
 					ivector *k) {
   int i;
   z_elem H_k;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
   assert(k);
-  
-  
+
+
   if(depth == v->rank - 1) {
     for (i = 0; i < 2*v->n_phy[v->rank - 1]; i++) {
       k->v[v->rank - 1] = i;
@@ -993,7 +993,7 @@ static void rs2_filter_new_printf_dft_r(rs2_filter_new *v, int depth,
       }
       printf(":, :)\n");
     }
-    
+
     for(i = 0; i < 2*v->n_phy[depth]; i++) {
       rs2_filter_new_printf_dft_r(v, depth+1, k);
       k->v[depth]++;
@@ -1013,7 +1013,7 @@ void rs2_filter_new_dft_get(const rs2_filter_new *v, ivector *k, z_elem *H_k) {
 
   int *k_idx;
   int i, idx;
-  
+
   assert(v);
   assert(k);
   assert(H_k);
@@ -1021,10 +1021,10 @@ void rs2_filter_new_dft_get(const rs2_filter_new *v, ivector *k, z_elem *H_k) {
 
   k_idx = malloc(v->rank * sizeof(int));
   assert(k_idx);
-  
+
   scale_factor[0] = 1;
   scale_factor[1] = 0;
-  
+
   for (i = 0; i < v->rank; i++) {
     /* See O&S2 (8.174) */
     if (k->v[i] == 0) {
@@ -1062,18 +1062,18 @@ void rs2_filter_new_dft_get(const rs2_filter_new *v, ivector *k, z_elem *H_k) {
   (*H_k)[1] = 0;
 
   zmul(H_k, (const z_elem *) &scale_factor);
-  
+
   free(k_idx);
 }
 
 
 static int rs2_filter_row_major_idx(int rank, const int *i, const int *n_phy) {
   int j, idx;
-  
+
   assert(rank > 0);
   assert(i);
   assert(n_phy);
-  
+
   idx = i[0];
   for (j = 1; j < rank; j++) {
     idx *= n_phy[j];
@@ -1087,22 +1087,22 @@ static int rs2_filter_row_major_idx(int rank, const int *i, const int *n_phy) {
 void rs2_filter_new_execute_r(const rs2_filter_new *v, r_filter_new *x) {
   int i;
   ivector *k;
-  
+
   assert(v);
   assert(x);
   assert(v->d == F);
   assert(x->d == F);
   assert(v->rank == x->rank);
-  
+
   for (i = 0; i < v->rank; i++) {
     assert(x->n_log[i] == 2*v->n_phy[i]);
   }
 
   k = ivector_create(v->rank);
   ivector_set0(k);
-  
+
   rs2_filter_new_execute_r_r(v, x, x->h, 0, k);
-  
+
   ivector_destroy(&k);
 }
 
@@ -1112,14 +1112,14 @@ static elem *rs2_filter_new_execute_r_r(const rs2_filter_new *v,
 					int depth, ivector *k) {
   int i;
   z_elem H_k;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
   assert(x);
   assert(k);
-  
-  
+
+
   if(depth == v->rank - 1) {
     for (i = 0; i < floor(x->n_log[v->rank - 1]/2) + 1; i++) {
       k->v[v->rank - 1] = i;
@@ -1169,18 +1169,18 @@ rs12_filter_new *rs12_filter_new_create(int rank, const int *n_phy,
   int *n_log;
   int i;
   fftw_r2r_kind *kind_fftw;
-    
+
   assert(rank > 0);
   assert(n_phy);
   assert(kind);
-  
+
   v = malloc(sizeof(rs12_filter_new));
   assert(v);
 
   v->rank = rank;
   v->n_phy = n_phy;
   v->kind = kind;
-  
+
   v->N_phy = 1;
   for (i = 0; i < rank; i++) {
     /* Singleton dimensions are not allowed! */
@@ -1212,13 +1212,13 @@ rs12_filter_new *rs12_filter_new_create(int rank, const int *n_phy,
   for (i = 0; i < rank; i++) {
     v->N_log *= n_log[i];
   }
-  
+
   v->d = S;
 
   kind_fftw = malloc(rank * sizeof(fftw_r2r_kind));
   assert(kind_fftw);
 
-  
+
   for (i = 0; i < rank; i++) {
     if (kind[i] == TYPE1) {
       kind_fftw[i] = FFTW_REDFT00;
@@ -1230,10 +1230,10 @@ rs12_filter_new *rs12_filter_new_create(int rank, const int *n_phy,
       assert(0);
     }
   }
-  
+
   v->forward_plan = fftwe_plan_r2r(rank, n_phy, v->h, v->h, kind_fftw,
 				   FFTW_ESTIMATE);
-  
+
   for (i = 0; i < rank; i++) {
     if (kind[i] == TYPE1) {
       kind_fftw[i] = FFTW_REDFT00;
@@ -1248,9 +1248,9 @@ rs12_filter_new *rs12_filter_new_create(int rank, const int *n_phy,
 
   v->backward_plan = fftwe_plan_r2r(rank, n_phy, v->h, v->h, kind_fftw,
 				    FFTW_ESTIMATE);
-  
+
   free(kind_fftw);
-  
+
   return v;
 }
 
@@ -1298,7 +1298,7 @@ void rs12_filter_new_idft(rs12_filter_new *v) {
 
 void rs12_filter_new_printf(rs12_filter_new *v) {
   ivector *count;
-  
+
   assert(v);
 
   if (v->rank > 1) {
@@ -1308,7 +1308,7 @@ void rs12_filter_new_printf(rs12_filter_new *v) {
   else {
     count = NULL;
   }
-  
+
   rs12_filter_new_printf_r(v, v->h, 0, count);
 
   if (v->rank > 1) {
@@ -1322,7 +1322,7 @@ void rs12_filter_new_printf(rs12_filter_new *v) {
 static elem *rs12_filter_new_printf_r(rs12_filter_new *v, elem *h, int depth,
 				     ivector *count) {
   int i;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
@@ -1330,7 +1330,7 @@ static elem *rs12_filter_new_printf_r(rs12_filter_new *v, elem *h, int depth,
     assert(count);
   }
   assert(h);
-  
+
 
   if(depth == v->rank - 1) {
     r_fprintf_row(stdout, h, v->n_phy[v->rank - 1]);
@@ -1344,7 +1344,7 @@ static elem *rs12_filter_new_printf_r(rs12_filter_new *v, elem *h, int depth,
       }
       printf(":, :)\n");
     }
-    
+
     for(i = 0; i < v->n_phy[depth]; i++) {
       h = rs12_filter_new_printf_r(v, h, depth+1, count);
       count->v[depth]++;
@@ -1362,11 +1362,11 @@ static elem *rs12_filter_new_printf_r(rs12_filter_new *v, elem *h, int depth,
 
 static int rs12_filter_row_major_idx(int rank, const int *i, const int *n_phy) {
   int j, idx;
-  
+
   assert(rank > 0);
   assert(i);
   assert(n_phy);
-  
+
   idx = i[0];
   for (j = 1; j < rank; j++) {
     idx *= n_phy[j];
@@ -1383,7 +1383,7 @@ void rs12_filter_new_dft_get(const rs12_filter_new *v, ivector *k, z_elem *H_k) 
 
   int *k_idx;
   int i, idx;
-  
+
   assert(v);
   assert(k);
   assert(H_k);
@@ -1391,10 +1391,10 @@ void rs12_filter_new_dft_get(const rs12_filter_new *v, ivector *k, z_elem *H_k) 
 
   k_idx = malloc(v->rank * sizeof(int));
   assert(k_idx);
-  
+
   scale_factor[0] = 1;
   scale_factor[1] = 0;
-  
+
   for (i = 0; i < v->rank; i++) {
     switch (v->kind[i]) {
     case TYPE1:
@@ -1423,7 +1423,7 @@ void rs12_filter_new_dft_get(const rs12_filter_new *v, ivector *k, z_elem *H_k) 
       else if (k->v[i] == v->n_phy[i]) {
 	(*H_k)[0] = 0;
 	(*H_k)[1] = 0;
-	
+
 	free(k_idx);
 	return;
       }
@@ -1450,22 +1450,22 @@ void rs12_filter_new_dft_get(const rs12_filter_new *v, ivector *k, z_elem *H_k) 
   (*H_k)[1] = 0;
 
   zmul(H_k, (const z_elem *) &scale_factor);
-  
+
   free(k_idx);
 }
 
 
 void rs12_filter_new_printf_dft(rs12_filter_new *v) {
   ivector *k;
-  
+
   assert(v);
   assert(v->d == F);
-  
+
   k = ivector_create(v->rank);
   ivector_set0(k);
-  
+
   rs12_filter_new_printf_dft_r(v, 0, k);
-  
+
   ivector_destroy(&k);
 }
 
@@ -1474,13 +1474,13 @@ static void rs12_filter_new_printf_dft_r(rs12_filter_new *v, int depth,
 					ivector *k) {
   int i;
   z_elem H_k;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
   assert(k);
-  
-  
+
+
   if(depth == v->rank - 1) {
     for (i = 0; i < v->n_log[v->rank - 1]; i++) {
       k->v[v->rank - 1] = i;
@@ -1497,7 +1497,7 @@ static void rs12_filter_new_printf_dft_r(rs12_filter_new *v, int depth,
       }
       printf(":, :)\n");
     }
-    
+
     for(i = 0; i < v->n_log[depth]; i++) {
       rs12_filter_new_printf_dft_r(v, depth+1, k);
       k->v[depth]++;
@@ -1517,10 +1517,10 @@ rs12_filter_new *rs12_filter_new_import(char *filename) {
   int *n_phy;
   int sizeof_elem;
   rs12_filter_new_kind *kind;
-  
+
   int r;
   rs12_filter_new *v;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -1529,7 +1529,7 @@ rs12_filter_new *rs12_filter_new_import(char *filename) {
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&rank, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -1537,7 +1537,7 @@ rs12_filter_new *rs12_filter_new_import(char *filename) {
 
   n_phy = malloc(rank * sizeof(int));
   assert(n_phy);
-  
+
   r = fread(n_phy, sizeof(int), rank, fid);
   assert(r == rank);
 
@@ -1547,12 +1547,12 @@ rs12_filter_new *rs12_filter_new_import(char *filename) {
   assert(sizeof(rs12_filter_new_kind) == sizeof(int));
   r = fread(kind, sizeof(rs12_filter_new_kind), rank, fid);
   assert(r == rank);
-  
+
   v = rs12_filter_new_create(rank, n_phy, kind);
 
   r = fread(v->h, sizeof(elem), v->N_phy, fid);
   assert(r == v->N_phy);
-  
+
   fclose(fid);
 
   return v;
@@ -1579,10 +1579,10 @@ void rs12_filter_new_export(char *filename, rs12_filter_new *v) {
   assert(sizeof(rs12_filter_new_kind) == sizeof(int));
   r = fwrite(v->kind, sizeof(rs12_filter_new_kind), v->rank, fid);
   assert(r == v->rank);
-  
+
   r = fwrite(v->h, sizeof(elem), v->N_phy, fid);
   assert(r == v->N_phy);
-  
+
   fclose(fid);
 }
 
@@ -1590,22 +1590,22 @@ void rs12_filter_new_export(char *filename, rs12_filter_new *v) {
 void rs12_filter_new_execute_r(const rs12_filter_new *v, r_filter_new *x) {
   int i;
   ivector *k;
-  
+
   assert(v);
   assert(x);
   assert(v->d == F);
   assert(x->d == F);
   assert(v->rank == x->rank);
-  
+
   for (i = 0; i < v->rank; i++) {
     assert(x->n_log[i] == v->n_log[i]);
   }
 
   k = ivector_create(v->rank);
   ivector_set0(k);
-  
+
   rs12_filter_new_execute_r_r(v, x, x->h, 0, k);
-  
+
   ivector_destroy(&k);
 }
 
@@ -1615,14 +1615,14 @@ static elem *rs12_filter_new_execute_r_r(const rs12_filter_new *v,
 					int depth, ivector *k) {
   int i;
   z_elem H_k;
-  
+
   assert(v);
   assert(depth >= 0);
   assert(depth < v->rank);
   assert(x);
   assert(k);
-  
-  
+
+
   if(depth == v->rank - 1) {
     for (i = 0; i < floor(x->n_log[v->rank - 1]/2) + 1; i++) {
       k->v[v->rank - 1] = i;

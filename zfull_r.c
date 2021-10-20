@@ -3,13 +3,13 @@
 #include <assert.h>
 
 #include "zfull_r.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 zfull_r *zfull_r_create(int m, int n) {
   zfull_r *A = NULL;
   int i;
-  
+
   assert(m > 0);
   assert(n > 0);
 
@@ -29,7 +29,7 @@ zfull_r *zfull_r_create(int m, int n) {
   }
 
   A->v_vector = A->v[0];
-  
+
   return A;
 }
 
@@ -51,7 +51,7 @@ void zfull_r_destroy(zfull_r **A) {
 /* C <- A * B */
 void zfull_r_mmm(const zfull_r *A, const zfull_r *B, zfull_r *C) {
   z_elem alpha, beta;
-  
+
   assert(A);
   assert(B);
   assert(C);
@@ -61,7 +61,7 @@ void zfull_r_mmm(const zfull_r *A, const zfull_r *B, zfull_r *C) {
 
   alpha[0] = 1;
   alpha[1] = 0;
-  
+
   beta[0] = 1;
   beta[1] = 0;
 
@@ -76,7 +76,7 @@ void zfull_r_mmm(const zfull_r *A, const zfull_r *B, zfull_r *C) {
 
 void zfull_r_r_foreach(const zfull_r *A, int i, void (*func)(const z_elem *)) {
   int j;
-  
+
   assert(A);
   assert(func);
   assert(i >= 0 && i < A->m);
@@ -105,7 +105,7 @@ void zfull_r_export(const char *filename, const zfull_r *A) {
   elem *e_ptr;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(A);
 
@@ -137,7 +137,7 @@ void zfull_r_export(const char *filename, const zfull_r *A) {
     assert(r == 1);
     e_ptr += 2;
   }
-  
+
   fclose(fid);
 }
 

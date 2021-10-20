@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "vector.h"
-#include "blas.h"
+#include "eblas.h"
 
 
 /******************************************************************************/
@@ -18,14 +18,14 @@ vector *vector_create(int n) {
 
   assert(n > 0);
 
-  
+
   v = malloc(sizeof(vector));
   assert(v);
 
   v->n = n;
   v->v = malloc(sizeof(elem) * n);
   assert(v->v);
-  
+
   return v;
 }
 
@@ -45,7 +45,7 @@ void vector_fnprintf(FILE *fid, const vector *v, int n) {
   assert(fid);
   assert(v);
   assert(n >= 0 && n <= v->n);
-  
+
   for (i = 0; i < n; i++) {
     fprintf_elem_s(fid, v->v[i]);
   }
@@ -68,7 +68,7 @@ vector *vector_import(const char *filename) {
   int n, count;
   vector *v;
   int sizeof_elem;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -77,7 +77,7 @@ vector *vector_import(const char *filename) {
   count = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(count == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   count = fread(&n, sizeof(int), 1, fid);
   assert(count == 1);
 
@@ -85,7 +85,7 @@ vector *vector_import(const char *filename) {
 
   count = fread(v->v, sizeof(elem), n, fid);
   assert(count == n);
-  
+
   fclose(fid);
 
   return v;
@@ -101,7 +101,7 @@ void vector_set0(vector *v) {
 
 void vector_set_nan(vector *v) {
   elem nan;
-  
+
   assert(v);
 
   nan = ENAN;
@@ -113,7 +113,7 @@ void vector_export(const char *filename, const vector *v) {
   FILE *fid;
   int n;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(v);
 
@@ -129,7 +129,7 @@ void vector_export(const char *filename, const vector *v) {
 
   n = fwrite(v->v, sizeof(elem), v->n, fid);
   assert(n == v->n);
-  
+
   fclose(fid);
 }
 
@@ -163,7 +163,7 @@ elem vector_squared_norm(const vector *x) {
 /* x[i] <- x[i] + alpha */
 void vector_add_scalar(vector *x, elem alpha) {
   elem one = 1;
-  
+
   assert(x);
 
   eaxpy(x->n, alpha, &one, 0, x->v, 1);
@@ -190,14 +190,14 @@ zvector *zvector_create(int n) {
 
   assert(n > 0);
 
-  
+
   v = malloc(sizeof(zvector));
   assert(v);
 
   v->n = n;
   v->v = malloc(sizeof(z_elem) * n);
   assert(v->v);
-  
+
   return v;
 }
 
@@ -213,7 +213,7 @@ void zvector_export(const char *filename, const zvector *v) {
   FILE *fid;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(v);
 
@@ -229,13 +229,13 @@ void zvector_export(const char *filename, const zvector *v) {
 
   r = fwrite(v->v, sizeof(z_elem), v->n, fid);
   assert(r == v->n);
-  
+
   fclose(fid);
 }
 
 void zvector_printf(const zvector *v) {
   int i;
-  
+
   assert(v);
 
   for (i = 0; i < v->n; i++) {
@@ -262,14 +262,14 @@ ivector *ivector_create(int n) {
 
   assert(n > 0);
 
-  
+
   v = malloc(sizeof(ivector));
   assert(v);
 
   v->n = n;
   v->v = malloc(sizeof(int) * n);
   assert(v->v);
-  
+
   return v;
 }
 
@@ -283,7 +283,7 @@ void ivector_destroy(ivector **v) {
 
 void ivector_printf(const ivector *v) {
   int i;
-  
+
   assert(v);
 
   for (i = 0; i < v->n; i++) {
@@ -297,7 +297,7 @@ ivector *ivector_import(const char *filename) {
   int n, count;
   ivector *v;
   int sizeof_int;
-  
+
   assert(filename);
 
   fid = fopen(filename, "r");
@@ -306,7 +306,7 @@ ivector *ivector_import(const char *filename) {
   count = fread(&sizeof_int, sizeof(int), 1, fid);
   assert(count == 1);
   assert(sizeof_int == sizeof(int));
-  
+
   count = fread(&n, sizeof(int), 1, fid);
   assert(count == 1);
 
@@ -314,7 +314,7 @@ ivector *ivector_import(const char *filename) {
 
   count = fread(v->v, sizeof(int), n, fid);
   assert(count == n);
-  
+
   fclose(fid);
 
   return v;
@@ -330,7 +330,7 @@ void ivector_export(const char *filename, const ivector *v) {
   FILE *fid;
   int n;
   int sizeof_int;
-  
+
   assert(filename);
   assert(v);
 
@@ -346,7 +346,7 @@ void ivector_export(const char *filename, const ivector *v) {
 
   n = fwrite(v->v, sizeof(int), v->n, fid);
   assert(n == v->n);
-  
+
   fclose(fid);
 }
 
@@ -359,7 +359,7 @@ void ivector_export(const char *filename, const ivector *v) {
 
 svector *svector_create(int n, int nnz) {
   svector *v;
-  
+
   assert(nnz > 0);
   assert(n > 0);
   assert(nnz <= n);
@@ -375,7 +375,7 @@ svector *svector_create(int n, int nnz) {
 
   v->i = malloc(sizeof(int) * nnz);
   assert(v->i);
-  
+
   return v;
 }
 
@@ -386,7 +386,7 @@ svector *svector_import(const char *filename) {
   FILE *fid;
   unsigned int r;
   int sizeof_elem;
-  
+
   assert(filename);
   fid = fopen(filename, "r");
   assert(fid);
@@ -394,7 +394,7 @@ svector *svector_import(const char *filename) {
   r = fread(&sizeof_elem, sizeof(int), 1, fid);
   assert(r == 1);
   assert(sizeof_elem == sizeof(elem));
-  
+
   r = fread(&n, sizeof(int), 1, fid);
   assert(r == 1);
 
@@ -408,7 +408,7 @@ svector *svector_import(const char *filename) {
 
   r = fread(v->i, sizeof(int), nnz, fid);
   assert(r == nnz);
-  
+
   fclose(fid);
 
   return v;
@@ -418,7 +418,7 @@ void svector_export(const char *filename, const svector *v) {
   FILE *fid;
   int r;
   int sizeof_elem;
-  
+
   assert(filename);
   assert(v);
 
@@ -458,7 +458,7 @@ void svector_destroy(svector **v) {
 
 void svector_printf(const svector *v) {
   int i, index;
-  
+
   assert(v);
 
   index = 0;
@@ -474,5 +474,3 @@ void svector_printf(const svector *v) {
 
   assert(index == v->nnz);
 }
-
-
