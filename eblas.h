@@ -1,10 +1,15 @@
-#ifndef BLAS_H
-#define BLAS_H
+#ifndef EBLAS_H
+#define EBLAS_H
 
 #ifdef ATLAS
 #include <cblas.h>
 #elif defined OPENBLAS
-#include <cblas-openblas.h>
+/* This is a bit of a kludge. The GSL library includes its own set of
+ * C BLAS definitions. This prevents attempting to redefine these
+ * definitions. */
+#ifndef CBLAS_INDEX
+#include <cblas.h>
+#endif
 #elif defined VECLIB
 //#include <cblas.h>
 #include <gsl/gsl_cblas.h>

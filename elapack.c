@@ -1,14 +1,14 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "lapack.h"
+#include "elapack.h"
 
 
 int eposv(const int order, const char uplo,
 	   const int N, const int NRHS,
 	   elem *A, const int lda,
 	   elem *B, const int ldb) {
-#ifdef OSX
+#ifdef VECLIB
   int info;
   char uplo_ = uplo;
   int N_ = N;
@@ -39,7 +39,7 @@ int eposv(const int order, const char uplo,
 
 int epotrf(const int order, const char uplo,
 	   const int N, elem *A, const int lda) {
-#ifdef OSX
+#ifdef VECLIB
   int info;
   char uplo_ = uplo;
   int N_ = N;
@@ -69,7 +69,7 @@ int epotrf(const int order, const char uplo,
 int epotrs(const int order, const char uplo,
 	   const int N, const int NRHS,
 	   elem *A, const int lda, elem *B, const int ldb) {
-#ifdef OSX
+#ifdef VECLIB
   int info;
   char uplo_ = uplo;
   int N_ = N;
@@ -101,7 +101,7 @@ int epotrs(const int order, const char uplo,
 int eppsv(const int order, const char uplo,
 	  const int N, const int NRHS,
 	  elem *A, elem *B, const int ldb) {
-#ifdef OSX
+#ifdef VECLIB
   int info;
   char uplo_ = uplo;
   int N_ = N;
@@ -131,7 +131,7 @@ int eppsv(const int order, const char uplo,
 
 int epptrf(const int order, const char uplo,
 	   const int N, elem *A) {
-#ifdef OSX
+#ifdef VECLIB
   int info;
   char uplo_ = uplo;
   int N_ = N;
@@ -160,7 +160,7 @@ int epptrf(const int order, const char uplo,
 int epptrs(const int order, const char uplo,
 	   const int N, const int NRHS,
 	   elem *A, elem *B, const int ldb) {
-#ifdef OSX
+#ifdef VECLIB
   int info;
   char uplo_ = uplo;
   int N_ = N;
