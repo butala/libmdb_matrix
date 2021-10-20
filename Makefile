@@ -26,9 +26,12 @@ ifeq ($(UNAME),Linux)
       $(error Unknown machine type $(MACHINE))
    endif
 else ifeq ($(UNAME),Darwin)
-   DEFINES = -DOSX -DLONG_PTR -DVECLIB
-   LIBS += -framework Accelerate -F/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks
-   INCLUDE_DIR += -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
+   #DEFINES = -DOSX -DLONG_PTR -DVECLIB
+   #LIBS += -framework Accelerate -F/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks
+   #INCLUDE_DIR += -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
+   DEFINES = -DOSX -DOPENBLAS
+   INCLUDE_DIR += -I/usr/local/Cellar/openblas/0.3.18/include
+   LIBS += -L/usr/local/Cellar/openblas/0.3.18/lib -lopenblas
 else
    $(error $(UNAME) is not supported!)
 endif
@@ -72,7 +75,7 @@ STATIC_LIB_TARGET = libmdb_matrix_s.a libmdb_matrix_d.a
 
 TEST_TARGET = full_r_test full_c_test sparse_rcs_test sparse_rcs_mvm_test \
 	      sparse_ccs_test toeplitz_test filter_test psf_test psf_2d_test \
-              filter_new_test fftwe_test lapack_test llist_test \
+              filter_new_test fftwe_test elapack_test llist_test \
 	      psf_3d_test vector_test zfull_r_test sparse_rcs_mmm_test \
               lt_c_test toeplitz_new_test lt_r_test sparse_lil_test \
 	      counter_test util_test sb_toe_r_to_coo
@@ -81,10 +84,10 @@ TEST_TARGET_OBJ = $(addsuffix .o, $(TEST_TARGET))
 
 # The order matters because the headers for each of these files gets
 # combined into one by build_header.py
-LIB_BASENAME = elem util blas fftwe vector full_r sparse_rcs sparse_ccs full_c \
+LIB_BASENAME = elem util eblas fftwe vector full_r sparse_rcs sparse_ccs full_c \
 	       counter full_ut_c full_lt_c full_lt_r diag toeplitz \
                filter filter_new psf psf_2d psf_3d stop_watch \
-               zfull_r zfull_c lapack sparse_coo toeplitz_new llist sparse_lil
+               zfull_r zfull_c elapack sparse_coo toeplitz_new llist sparse_lil
 
 
 LIB_OBJ_S = $(addsuffix _s.o, $(LIB_BASENAME))
@@ -175,7 +178,7 @@ toeplitz_new_test: toeplitz_new_test.o
 
 fftwe_test: fftwe_test.o
 
-lapack_test: lapack_test.o
+elapack_test: elapack_test.o
 
 llist_test: llist_test.o
 
