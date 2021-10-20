@@ -1,39 +1,32 @@
 CC = cc
 LIBTOOL = libtool
 AR = ar
+PKG_CONFIG = pkg-config
 
 PWD := $(shell pwd)
 UNAME := $(shell uname)
-MACHINE := $(shell uname -m)
 
 LIBS = -lgsl
 LDFLAGS = -L.
 
-ifeq ($(UNAME),Linux)
-   DEFINES = -DLINUX -DOPENBLAS
-   LIBS += -llapacke
-   ifeq ($(MACHINE),x86_64)
-      DEFINES += -DLONG_PTR
-       LIBS += -lopenblas
-   else ifeq ($(MACHINE),i686)
-      LDFLAGS += -L/usr/lib/sse2 -L/usr/lib/sse2/atlas
-      LIBS += -latlas -lf77blas -lcblas
-   else ifeq ($(MACHINE),ppc)
-      LDFLAGS += -L/usr/lib/altivec
-      LIBS += -llapack_atlas -lcblas \
-              -Wl,-rpath,/usr/lib/altivec
-   else
-      $(error Unknown machine type $(MACHINE))
-   endif
-else ifeq ($(UNAME),Darwin)
-   #DEFINES = -DOSX -DLONG_PTR -DVECLIB
-   #LIBS += -framework Accelerate -F/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks
-   #INCLUDE_DIR += -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
-   DEFINES = -DOSX -DOPENBLAS
-   INCLUDE_DIR += -I/usr/local/Cellar/openblas/0.3.18/include
-   LIBS += -L/usr/local/Cellar/openblas/0.3.18/lib -lopenblas
+BLAS = veclib
+# BLAS = openblas
+
+ifeq ($(UNAME),Darwin)
+   # Use homebrew installation of openblas
+   export PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig"
+endif
+
+ifeq ($(BLAS),openblas)
+   DEFINES = -DOPENBLAS
+   INCLUDE_DIR += $(shell $(PKG_CONFIG) --cflags openblas)
+   LIBS += $(shell $(PKG_CONFIG) --libs openblas)
+else ifeq ($(BLAS),veclib)
+   DEFINES = -DVECLIB
+   LIBS += -framework Accelerate -F/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks
+   INCLUDE_DIR += -I/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
 else
-   $(error $(UNAME) is not supported!)
+   $(error $(BLAS) is not supported!)
 endif
 
 ELEM_TEST = double
@@ -96,7 +89,7 @@ LIB_H = boolean.h
 LIB_H += $(addsuffix .h, $(LIB_BASENAME))
 
 
-all: $(LIB_TARGET) $(TEST_TARGET) TAGS
+all: $(LIB_TARGET) $(TEST_TARGET)
 
 ifeq ($(UNAME),Linux)
    libmdb_matrix_s.so: mdb_matrix_s.h
@@ -196,9 +189,6 @@ $(TEST_TARGET): mdb_matrix_d.h mdb_matrix_s.h
 $(TEST_TARGET_OBJ): mdb_matrix_d.h mdb_matrix_s.h
 $(TEST_TARGET): libmdb_matrix_s.so libmdb_matrix_d.so
 
-
-TAGS: *.[ch]
-	etags *.[ch]
 
 %_s.o : %.c
 	$(CC) -c $(CFLAGS_PIC) $(DEFINES) -DFLOAT_ELEM $< -o $@

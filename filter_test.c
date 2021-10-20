@@ -29,10 +29,12 @@ int main(void) {
   h_r = r_filter_create(N);
 
   for (i = 0; i < N; i++) {
-#ifdef OSX_BLAH
-    h_c->h[i][0] = N - i;
+#ifdef VECLIB
+      h_c->h[i][0] = N - i;
+#elif defined OPENBLAS
+      h_c->h[i] = N - i;
 #else
-    h_c->h[i] = N - i;
+#error 0
 #endif
     h_rs1->h[i] = N - i;
     h_rs2->h[i] = N - i;
@@ -40,19 +42,23 @@ int main(void) {
   c_filter_set_imag0(h_c);
 
   for (i = 0; i < x_rs1->n; i++) {
-#ifdef OSX_BLAH
-    x_rs1->h[i][0] = i;
+#ifdef VECLIB
+      x_rs1->h[i][0] = i;
+#elif defined OPENBLAS
+      x_rs1->h[i] = i;
 #else
-    x_rs1->h[i] = i;
+#error 0
 #endif
   }
   c_filter_set_imag0(x_rs1);
 
   for (i = 0; i < x_rs2->n; i++) {
-#ifdef OSX_BLAH
-    x_rs2->h[i][0] = i;
+#ifdef VECLIB
+      x_rs2->h[i][0] = i;
+#elif defined OPENBLAS
+      x_rs2->h[i] = i;
 #else
-    x_rs2->h[i] = i;
+#error 0
 #endif
   }
   c_filter_set_imag0(x_rs2);

@@ -1,18 +1,12 @@
 #ifndef ELAPACK_H
 #define ELAPACK_H
 
-#ifdef OSX
-//#include <cblas.h>
-//#include <gsl/gsl_cblas.h>
-//#include <clapack.h>
-//#define LAPACK_ROW_MAJOR CblasRowMajor
-//#define LAPACK_COL_MAJOR CblasColMajor
-//#include <lapack.h>
-//#include <lapacke_config.h>
-//#include <lapacke.h>
+#ifdef OPENBLAS
 #include <lapacke.h>
-#else
-#include <lapacke.h>
+#elif defined VECLIB
+#include <clapack.h>
+#define LAPACK_ROW_MAJOR               101
+#define LAPACK_COL_MAJOR               102
 #endif
 
 #include "elem.h"

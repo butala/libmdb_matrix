@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef ATLAS
-#include <cblas.h>
-#elif defined OPENBLAS
-#include <cblas.h>
-#elif defined VECLIB
-//#include <cblas.h>
-#else
-#error 0
-#endif
 #include <assert.h>
 
 #include "full_c.h"

@@ -1,9 +1,7 @@
 #ifndef EBLAS_H
 #define EBLAS_H
 
-#ifdef ATLAS
-#include <cblas.h>
-#elif defined OPENBLAS
+#ifdef OPENBLAS
 /* This is a bit of a kludge. The GSL library includes its own set of
  * C BLAS definitions. This prevents attempting to redefine these
  * definitions. */
@@ -11,10 +9,7 @@
 #include <cblas.h>
 #endif
 #elif defined VECLIB
-//#include <cblas.h>
-#include <gsl/gsl_cblas.h>
-#elif defined ACML
-#include <acml.h>
+#include <cblas.h>
 #else
 #error 0
 #endif

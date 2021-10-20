@@ -164,10 +164,12 @@ int main(int argc, char **argv) {
   c_filter_new_set_imag0(A);
 
   for (i = 0; i < A->N; i++) {
-#ifdef OSX_BLAH
-    A->h[i][0] = cos(i+1);
+#ifdef VECLIB
+      A->h[i][0] = cos(i+1);
+#elif defined OPENBLAS
+      A->h[i] = cos(i+1);
 #else
-    A->h[i] = cos(i+1);
+#error 0
 #endif
   }
 

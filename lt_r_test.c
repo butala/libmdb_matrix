@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
   int m, n;
   int i;
 
-#ifndef OSX
+#ifndef VECLIB
   full_r *A2;
 #endif
 
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   printf("A (m == n):\n");
   lt_r_printf(A);
 
-#ifndef OSX
+#ifndef VECLIB
   A2 = full_r_create(m, n);
   full_r_set0(A2);
 

@@ -33,10 +33,12 @@ int main(void) {
   count = 1;
   for (i = 0; i < ny; i++) {
     for (j = 0; j < nx; j++) {
-#ifdef OSX_BLAH
-      (*c_ptr)[0] = count*(i+1);
-#else
+#ifdef VECLIB
+      *c_ptr[0] = count*(i+1);
+#elif defined OPENBLAS
       *c_ptr = count*(i+1);
+#else
+#error 0
 #endif
       c_ptr++;
       count++;
