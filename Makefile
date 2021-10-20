@@ -6,11 +6,11 @@ PKG_CONFIG = pkg-config
 PWD := $(shell pwd)
 UNAME := $(shell uname)
 
-LIBS = -lgsl
-LDFLAGS = -L.
+# BLAS = veclib
+BLAS = openblas
 
-BLAS = veclib
-# BLAS = openblas
+LIBS += -lgsl
+LDFLAGS += -L.
 
 ifeq ($(UNAME),Darwin)
    # Use homebrew installation of openblas
@@ -18,11 +18,11 @@ ifeq ($(UNAME),Darwin)
 endif
 
 ifeq ($(BLAS),openblas)
-   DEFINES = -DOPENBLAS
+   DEFINES += -DOPENBLAS
    INCLUDE_DIR += $(shell $(PKG_CONFIG) --cflags openblas)
    LIBS += $(shell $(PKG_CONFIG) --libs openblas)
 else ifeq ($(BLAS),veclib)
-   DEFINES = -DVECLIB
+   DEFINES += -DVECLIB
    LIBS += -framework Accelerate -F/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks
    INCLUDE_DIR += -I/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
 else
