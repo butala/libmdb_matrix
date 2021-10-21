@@ -12,10 +12,7 @@ BLAS = openblas
 LIBS += -lgsl
 LDFLAGS += -L.
 
-ifeq ($(UNAME),Darwin)
-   # Use homebrew installation of openblas
-   export PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig"
-endif
+# export PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig"
 
 ifeq ($(BLAS),openblas)
    DEFINES += -DOPENBLAS
